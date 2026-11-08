@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gilded Ace Floor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="The fictional Gilded Ace casino floor, machine by machine. Click any machine to see its six months of play, luck and payouts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="floor-page">
+<header class="topbar gutter">
+  <div class="bar-row">
+    <a class="brand-pill" href="index.html"><span class="dot" aria-hidden="true"></span>Gilded Ace</a>
+    <nav class="pillnav" aria-label="Pages">
+      <a href="index.html" aria-current="page">Floor</a>
+      <a href="dashboard.html" id="to-dash">Dashboard</a>
+    </nav>
+    <div class="filters" role="group" aria-label="Period and machine search">
+      <div class="field"><label for="f-from">From</label><select id="f-from"></select></div>
+      <div class="field"><label for="f-to">To</label><select id="f-to"></select></div>
+      <div class="field"><label for="m-search">Find a machine</label><input type="search" id="m-search" list="m-list" placeholder="e.g. M-1158" autocomplete="off"></div>
+      <datalist id="m-list"></datalist>
+      <button class="btn primary" id="m-go" type="button">Show</button>
+    </div>
+    <a class="btn yellow" href="dashboard.html" id="to-dash-cta">Open the dashboard →</a>
+  </div>
+  <span class="small neg" id="m-error" role="alert"></span>
+</header>
+
+<main class="stage" id="stage">
+  <div class="mapbox">
+    <div class="floor3d" id="floor3d" hidden>
+      <div class="f3-bar">
+        <span class="f3-clock" data-clock aria-live="off">Loading the floor…</span>
+        <div class="f3-actions">
+          <button class="btn small-btn" type="button" data-toggle-guests aria-pressed="false">Pause guests</button>
+          <button class="btn small-btn" type="button" data-focus>Zoom to machine</button>
+          <button class="btn small-btn" type="button" data-reset>Reset view</button>
+        </div>
+      </div>
+    </div>
+    <div class="floorwrap" id="floor-wrap" hidden></div>
+  </div>
+
+  <section class="panel p-left" aria-labelledby="map-title">
+    <div class="panel-head">
+      <div>
+        <span class="eyebrow">Luck, location, or a leak?</span>
+        <h1 id="map-title">The casino floor</h1>
+      </div>
+      <button class="icon-btn" type="button" id="left-toggle" aria-expanded="true" aria-controls="left-body" title="Collapse panel">–</button>
+    </div>
+    <div class="panel-body" id="left-body">
+      <div class="stats compact" id="hero-stats"></div>
+      <div class="ctl">
+        <span class="ctl-label">View</span>
+        <div class="seg dark-seg" role="group" aria-label="Floor view">
+          <button type="button" data-view="3d" aria-pressed="true">3D floor</button>
+          <button type="button" data-view="plan" aria-pressed="false">Plan view</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <span class="ctl-label">Color machines by</span>
+        <div class="seg" role="group" aria-label="Color machines by">
+          <button type="button" data-metric="play" aria-pressed="true">Play</button>
+          <button type="button" data-metric="luck" aria-pressed="false">Luck</button>
+          <button type="button" data-metric="payout" aria-pressed="false">Payout check</button>
+          <button type="button" data-metric="uptime" aria-pressed="false">Uptime</button>
+        </div>
+      </div>
+      <div class="legendbox" id="floor-legend"></div>
+      <div class="timebar" id="f3-time" hidden>
+        <label for="f3-hour">Time of day</label>
+        <input type="range" id="f3-hour" min="0" max="23.75" step="0.25" value="20">
+        <span class="num" id="f3-hour-out">8:00 PM</span>
+        <div class="seg" role="group" aria-label="Clock speed">
+          <button type="button" data-speed="1" aria-pressed="true">1×</button>
+          <button type="button" data-speed="10" aria-pressed="false">10×</button>
+        </div>
+      </div>
+      <p class="hint" id="view-hint">Drag to rotate · scroll or pinch to zoom · right-drag to pan · click a cabinet.</p>
+      <details class="about">
+        <summary>About this map</summary>
+        <p id="floor-cap"></p>
+        <p>The Gilded Ace is fictional and its data is synthetic (Dashboard Royale release 0.9.0-draft). Luck score = (actual − expected house win) ÷ its standard deviation. Payout check = how far the share of paying spins sits from the game sheet, in standard errors.</p>
+      </details>
+    </div>
+  </section>
+
+  <aside class="panel p-right" id="mpanel" aria-label="Selected machine">
+    <button class="icon-btn on-dark close" type="button" id="mpanel-close" title="Close machine card" aria-label="Close machine card">×</button>
+    <div id="mcard" aria-live="polite"></div>
+  </aside>
+  <button class="btn primary reopen" type="button" id="mpanel-open" hidden>Show machine card</button>
+
+  <section class="panel p-bottom" aria-label="The manager's bottom ten">
+    <span class="eyebrow">Manager's bottom ten · lowest raw house win</span>
+    <div class="quick" id="quick"></div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/GammaCorrectionShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="data.js"></script>
+<script src="core.js"></script>
+<script src="floor3d.js"></script>
+<script src="floor.js"></script>
+</body>
+</html>

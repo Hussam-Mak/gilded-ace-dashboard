@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gilded Ace Dashboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Luck, location, or a leak? A six-month review of the fictional Gilded Ace casino floor and a priced July plan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar gutter">
+  <div class="inner">
+    <div class="bar-row">
+      <a class="brand-pill" href="index.html"><span class="dot" aria-hidden="true"></span>Gilded Ace</a>
+      <nav class="pillnav" aria-label="Pages">
+        <a href="index.html" id="to-floor">Floor</a>
+        <a href="dashboard.html" aria-current="page">Dashboard</a>
+      </nav>
+      <span class="sub">Fictional casino · synthetic data · Jan 1 – Jun 30, 2025 · TAMU Datathon 2026</span>
+    </div>
+    <div class="filters" role="group" aria-label="Filters for every tab">
+      <div class="field"><label for="f-from">From</label><select id="f-from"></select></div>
+      <div class="field"><label for="f-to">To</label><select id="f-to"></select></div>
+      <div class="field"><label for="f-zone">Zone</label><select id="f-zone"></select></div>
+      <div class="field"><label for="f-bank">Bank</label><select id="f-bank"></select></div>
+      <button class="btn" id="f-reset" type="button">Reset filters</button>
+      <span class="chip" id="f-summary" aria-live="polite"></span>
+    </div>
+    <nav class="pillnav tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" data-view="answer" aria-selected="true">Answer</button>
+      <button class="tab" role="tab" data-view="machines" aria-selected="false">Machines</button>
+      <button class="tab" role="tab" data-view="floor" aria-selected="false">Floor &amp; demand</button>
+      <button class="tab" role="tab" data-view="downtime" aria-selected="false">Downtime</button>
+      <button class="tab" role="tab" data-view="guests" aria-selected="false">Guests &amp; comps</button>
+      <button class="tab" role="tab" data-view="model" aria-selected="false">Model</button>
+      <button class="tab" role="tab" data-view="plan" aria-selected="false">July plan</button>
+    </nav>
+  </div>
+</header>
+
+<main class="gutter">
+<div class="inner">
+
+<!-- ANSWER -->
+<section class="view" id="v-answer" role="tabpanel">
+  <div class="finding">
+    <span class="eyebrow">Luck, location, or a leak?</span>
+    <h2>Luck and location explain the ten lowest earners. One machine is leaking.</h2>
+    <p>Replacing the bottom ten would cost $220,000 and change little. Nine of them earned what their bets predict, and nine sit in Back Forty, the floor's quietest zone. The one real fault is M-1158, which pays out far too often. Every figure below follows the filters above.</p>
+  </div>
+  <div class="kpis" id="answer-kpis"></div>
+  <div class="trio" id="answer-trio"></div>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Daily coin-in for the selection</h3>
+      <div class="legend"><span><i class="key line" style="background:var(--s1)"></i>Coin-in</span><span><i class="key dot" style="background:var(--s2)"></i>Event or promotion day</span></div>
+      <div class="chartbox h260"><canvas id="c-answer-daily" role="img" aria-label="Daily coin-in for the selected period and area"></canvas></div>
+      <p class="cap" id="answer-daily-cap"></p>
+    </div>
+    <div class="card">
+      <h3>The July plan at a glance</h3>
+      <div class="budget" role="img" aria-label="Budget split: inspection $1,200, one promotion weekend $15,000, kept $83,800">
+        <span style="width:1.2%;background:var(--bad)"></span><span style="width:15%;background:var(--yellow)"></span><span style="width:83.8%;background:var(--context)"></span>
+      </div>
+      <div class="legend"><span><i class="key" style="background:var(--bad)"></i>Inspect M-1158 · $1,200</span><span><i class="key" style="background:var(--yellow)"></i>One tournament weekend · $15,000</span><span><i class="key" style="background:var(--context)"></i>Kept · $83,800</span></div>
+      <p class="cap">The promotion runs only if it passes four go/no-go checks on July 4. Otherwise the plan spends $1,200 and keeps $98,800.</p>
+      <div><button class="btn primary" type="button" data-goto="plan">Open the July plan</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- MACHINES -->
+<section class="view" id="v-machines" role="tabpanel" hidden>
+  <div class="finding">
+    <span class="eyebrow">Question 1 · Which machines are truly weak?</span>
+    <h2>Ranked fairly, the bottom ten are mostly unlucky or badly placed.</h2>
+    <p>Raw house win punishes machines with little play, short time on the floor, or bad luck. The luck score compares each machine's actual win with what its bets predicted, in standard deviations. The hit-rate score checks how often it pays anything against the published game sheet. The location index compares its coin-in with the same game elsewhere on the same days.</p>
+  </div>
+  <div class="card">
+    <h3>The manager's bottom ten, re-examined</h3>
+    <p class="cap">Lowest ten by raw house win within the current filters. Click a row to open that machine below.</p>
+    <div class="tablewrap"><table id="t-bottom"></table></div>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Luck scores against pure chance</h3>
+      <div class="legend"><span><i class="key" style="background:var(--s1)"></i>Machines</span><span><i class="key" style="background:var(--s2)"></i>Beyond ±3</span><span><i class="key dash" style="color:var(--axis)"></i>Expected if pure luck</span></div>
+      <div class="chartbox h260"><canvas id="c-luck-hist" role="img" aria-label="Histogram of machine luck scores against a normal curve"></canvas></div>
+      <p class="cap" id="luck-cap"></p>
+    </div>
+    <div class="card">
+      <h3>Expected vs. actual house win per machine</h3>
+      <div class="legend"><span><i class="key dot" style="background:var(--s2)"></i>Bottom ten</span><span><i class="key dot" style="background:var(--context)"></i>Other machines</span><span><i class="key dash" style="color:var(--axis)"></i>Actual = expected</span></div>
+      <div class="chartbox h260"><canvas id="c-scatter" role="img" aria-label="Scatter of expected versus actual house win per machine"></canvas></div>
+      <p class="cap">Points on the dashed line earned exactly what their bets predicted. Low points near the origin had little play, not bad luck.</p>
+    </div>
+  </div>
+  <div class="card" id="machine-detail">
+    <div class="searchrow">
+      <div class="field"><label for="m-search">Machine</label><input type="search" id="m-search" list="m-list" placeholder="e.g. M-1158" autocomplete="off"></div>
+      <datalist id="m-list"></datalist>
+      <button class="btn" type="button" id="m-open">Show machine</button>
+      <span class="small muted" id="m-error" role="alert"></span>
+    </div>
+    <div id="m-head"></div>
+    <div class="grid g2">
+      <div>
+        <div class="legend"><span><i class="key line" style="background:var(--s2)"></i>This machine</span><span><i class="key dash" style="color:var(--s1)"></i>Published hit rate</span></div>
+        <div class="chartbox h220"><canvas id="c-m-hit" role="img" aria-label="Monthly hit rate of the selected machine against the published rate"></canvas></div>
+      </div>
+      <div>
+        <div class="legend"><span><i class="key line" style="background:var(--s2)"></i>Observed hold</span><span><i class="key dash" style="color:var(--s1)"></i>Configured hold</span></div>
+        <div class="chartbox h220"><canvas id="c-m-hold" role="img" aria-label="Monthly observed hold of the selected machine against its configured hold"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLOOR -->
+<section class="view" id="v-floor" role="tabpanel" hidden>
+  <div class="finding">
+    <span class="eyebrow">Question 2 · What changed in demand, and why?</span>
+    <h2>Demand is steady and weekly. Where a machine sits matters more than which machine it is.</h2>
+    <p>Saturdays bring in about 60% more than Tuesdays, and citywide events add more. Back Forty machines earn about 0.65× what the same game earns elsewhere. When its main walkway closed for renovation, that zone fell further while the rest of the floor picked up the play.</p>
+  </div>
+  <div class="card">
+    <h3>Floor map: earnings vs. the same game elsewhere</h3>
+    <div class="ramp"><span>Below</span><span class="bar"></span><span>Above the floor average for each game</span><span class="muted">· circle size = machine positions · click a bank to filter</span></div>
+    <div id="floor-map"></div>
+    <p class="cap" id="map-cap"></p>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Zone earnings, adjusted for game</h3>
+      <div class="chartbox h260"><canvas id="c-zone-index" role="img" aria-label="Zone earnings index adjusted for game and day"></canvas></div>
+      <p class="cap">1.00 = the same game's floor average on the same days.</p>
+    </div>
+    <div class="card">
+      <h3>Natural experiment: the Back Forty walkway closure</h3>
+      <div class="legend"><span><i class="key line" style="background:var(--s1)"></i>Back Forty ÷ rest of floor</span><span><i class="key" style="background:var(--s2);opacity:.25"></i>Walkway closed, Mar 3 – Apr 6</span></div>
+      <div class="chartbox h260"><canvas id="c-closure" role="img" aria-label="Daily ratio of Back Forty to rest-of-floor earning rate around the walkway closure"></canvas></div>
+      <p class="cap" id="closure-cap"></p>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Average coin-in by weekday</h3>
+      <div class="chartbox h220"><canvas id="c-weekday" role="img" aria-label="Average daily coin-in by weekday"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Events in the period</h3>
+      <div class="tablewrap"><table id="t-events"></table></div>
+      <p class="cap">Citywide events come from public calendars. Property promotions are the casino's own.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Real-world context</h3>
+    <p class="cap">The challenge ships real public tables for context: Las Vegas visitation from the <a href="https://www.lvcva.com/research/" rel="noopener">LVCVA</a> and statewide slot results from the <a href="https://www.mgc.dps.mo.gov/" rel="noopener">Missouri Gaming Commission</a>. Their publishers have not cleared redistribution, so this public dashboard does not republish their figures. Neither was an input to the forecast: the LVCVA series was published after 2025, and both describe other populations, not this casino's guests.</p>
+  </div>
+</section>
+
+<!-- DOWNTIME -->
+<section class="view" id="v-downtime" role="tabpanel" hidden>
+  <div class="finding">
+    <span class="eyebrow">Question 3 · How much play was lost to downtime, and when?</span>
+    <h2>Repairs take about three hours. What varies is how often machines break and how long they wait.</h2>
+    <p>Ridgeline machines fault several times as often per machine as Halcyon's. Waits are a queue: with two technicians on shift a new fault is picked up at once unless two others are open. Short-staffed shifts in May doubled the play lost while waiting.</p>
+  </div>
+  <div class="searchrow"><div class="field"><label for="f-mf">Manufacturer (this tab)</label><select id="f-mf"></select></div></div>
+  <div class="kpis" id="down-kpis"></div>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Wagers lost to fault downtime, by month</h3>
+      <div class="legend"><span><i class="key" style="background:var(--s1)"></i>During repair</span><span><i class="key" style="background:var(--s2)"></i>Waiting for a technician</span></div>
+      <div class="chartbox h260"><canvas id="c-down-month" role="img" aria-label="Monthly wagers lost to downtime split into waiting and repair"></canvas></div>
+      <p class="cap">Valued at each machine's own average coin-in for that hour of day.</p>
+    </div>
+    <div class="card">
+      <h3>Faults per machine per month, by manufacturer</h3>
+      <div class="chartbox h260"><canvas id="c-down-mf" role="img" aria-label="Faults per machine per month by manufacturer"></canvas></div>
+      <p class="cap">Follows the date and zone filters.</p>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Wait for a technician, by staffing and queue</h3>
+      <div class="legend"><span><i class="key" style="background:var(--s1)"></i>2 technicians on shift</span><span><i class="key" style="background:var(--s2)"></i>1 technician</span><span><i class="key" style="background:var(--bad)"></i>None present</span></div>
+      <div class="chartbox h260"><canvas id="c-queue" role="img" aria-label="Average wait in hours by technicians on shift and open tickets"></canvas></div>
+      <p class="cap">All six months, floor-wide.</p>
+    </div>
+    <div class="card">
+      <h3>Technician staffing, planned vs. worked</h3>
+      <div class="legend"><span><i class="key" style="background:var(--context)"></i>Planned</span><span><i class="key" style="background:var(--s1)"></i>Worked</span></div>
+      <div class="chartbox h260"><canvas id="c-roster" role="img" aria-label="Planned and worked technician headcount by shift and month"></canvas></div>
+      <p class="cap">Average headcount per shift. Shifts are named in the roster's own terms.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GUESTS -->
+<section class="view" id="v-guests" role="tabpanel" hidden>
+  <div class="finding">
+    <span class="eyebrow">Questions 4 and 5 · Tracked players and the comp program</span>
+    <h2>Card holders lost about what the games predict. Comps got much cheaper in points on May 1.</h2>
+    <p>These figures cover loyalty-card play only, which is about two-thirds of all coin-in. The top tenth of card holders account for about two-thirds of expected loss. On May 1 the points price of every comp fell about 53% for every tier, with no measurable gain in play.</p>
+  </div>
+  <div class="searchrow">
+    <div class="field"><label for="g-tier">Starting tier</label><select id="g-tier"></select></div>
+    <div class="field"><label for="g-region">Home region</label><select id="g-region"></select></div>
+    <div class="field"><label for="g-age">Age band</label><select id="g-age"></select></div>
+    <span class="small muted">Guest data covers the whole floor; the zone and bank filters do not apply here.</span>
+  </div>
+  <div class="kpis" id="guest-kpis"></div>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Wagered, paid back, and net for the selection</h3>
+      <div class="chartbox h260"><canvas id="c-funnel" role="img" aria-label="Tracked coin-in, payout, net and expected loss for the selected guests"></canvas></div>
+      <p class="cap">Net = payout − wagers. Expected loss (theo) is what the games' payout rates predict for those bets.</p>
+    </div>
+    <div class="card">
+      <h3>How concentrated are results?</h3>
+      <div class="chartbox h260"><canvas id="c-conc" role="img" aria-label="Share of expected loss by card-holder decile"></canvas></div>
+      <p class="cap" id="conc-cap"></p>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Points needed per $1 of comps, by tier</h3>
+      <div class="legend"><span><i class="key line" style="background:var(--s1)"></i>Base</span><span><i class="key dash" style="color:var(--s2)"></i>Gold</span><span><i class="key line" style="background:var(--s3)"></i>Platinum</span></div>
+      <div class="chartbox h260"><canvas id="c-comp-price" role="img" aria-label="Weekly points per comp dollar by tier, dropping on May 1"></canvas></div>
+      <p class="cap">All guests, full period.</p>
+    </div>
+    <div class="card">
+      <h3>Food and drink cash, carded vs. uncarded</h3>
+      <div class="legend"><span><i class="key line" style="background:var(--s1)"></i>Carded cash</span><span><i class="key dash" style="color:var(--s2)"></i>Uncarded cash</span><span><i class="key line" style="background:var(--s3)"></i>Comps redeemed (menu value)</span></div>
+      <div class="chartbox h260"><canvas id="c-fnb" role="img" aria-label="Weekly food and drink cash for carded and uncarded guests and comps"></canvas></div>
+      <p class="cap">Uncarded guests cannot use comps, yet their cash fell more after May. The drop is a summer dining slowdown, not comps replacing cash.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MODEL -->
+<section class="view" id="v-model" role="tabpanel" hidden>
+  <div class="finding">
+    <span class="eyebrow">Model and validation</span>
+    <h2>A weekday-and-calendar forecast beats both baselines on a time-based holdout.</h2>
+    <p>Trained on January–April and scored on May–June. Event and holiday adjustments use only events announced by April 30, so nothing from the holdout leaks in. The frozen forecast is also the yardstick for measuring the July promotion.</p>
+  </div>
+  <div class="kpis" id="model-kpis"></div>
+  <div class="card">
+    <h3>Holdout: actual daily coin-in vs. forecasts frozen on April 30</h3>
+    <div class="legend"><span><i class="key line" style="background:var(--s1)"></i>Actual</span><span><i class="key dash" style="color:var(--s2)"></i>Weekday + calendar</span><span><i class="key dash" style="color:var(--axis)"></i>Weekday average</span><span><i class="key dash" style="color:var(--context)"></i>Flat average</span></div>
+    <div class="chartbox h300"><canvas id="c-holdout" role="img" aria-label="Actual and forecast daily coin-in for May and June 2025"></canvas></div>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Error on the holdout</h3>
+      <div class="tablewrap"><table id="t-errors"></table></div>
+      <p class="cap">MAE = average absolute daily miss in dollars. Bias = average of actual − forecast; negative means the forecast ran high.</p>
+    </div>
+    <div class="card">
+      <h3>How the model changes a decision</h3>
+      <ul>
+        <li>It is the counterfactual for the promotion: actual coin-in minus the frozen forecast gives the lift.</li>
+        <li>Using only data before the event, the February tournament produced $566K–$884K of net extra wagers, against a $158K break-even for a $15,000 package.</li>
+        <li>On 20 ordinary weekends the same method finds deviations from −$300K to +$212K, so a July lift above $212K stands out from all of them.</li>
+      </ul>
+      <div class="tablewrap"><table id="t-preevent"></table></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Placebo test: forecast deviation on ordinary weekends vs. the tournament</h3>
+    <div class="legend"><span><i class="key" style="background:var(--context)"></i>Ordinary Fri–Sun weekend</span><span><i class="key" style="background:var(--s2)"></i>February slot tournament</span></div>
+    <div class="chartbox h260"><canvas id="c-placebo" role="img" aria-label="Forecast deviation on 20 ordinary weekends and the slot tournament"></canvas></div>
+    <p class="cap">Included: every Friday–Sunday from January 1 to June 30 with no citywide event, casino promotion or federal holiday. The tournament ranks first of 21, a rank p-value of about 0.05; with 20 comparison weekends that is the strongest claim the test supports.</p>
+  </div>
+</section>
+
+<!-- PLAN -->
+<section class="view" id="v-plan" role="tabpanel" hidden>
+  <div class="finding">
+    <span class="eyebrow">Question 6 · The $100,000 decision for July 1–30</span>
+    <h2>Inspect the one leak. Run one tournament if it passes its checks. Keep the rest.</h2>
+    <p>$16,200 committed, $83,800 kept. If any promotion check fails on July 4, spend $1,200 and keep $98,800. Each action links to the evidence behind it.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <span class="eyebrow">Payout · $1,200 · order Jul 1, inspect Jul 2</span>
+      <h3>Inspect and reconcile M-1158</h3>
+      <ul>
+        <li>Hits 38.57% of 674,454 spins vs 31.54% on the other 47 Desert Gold machines, every month.</li>
+        <li>Buys information: paytable, software, meters and jackpot accounting. Any repair is separate and unscoped.</li>
+        <li>If a correction follows, about $200 a day of expected house win returns, so it pays back in about six days.</li>
+        <li>Success: a documented reconciliation, then a three-day hit rate inside 30.6%–32.4%.</li>
+      </ul>
+      <div><button class="btn" type="button" data-evidence="m1158">Show the evidence</button></div>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Demand · $15,000 · order by Jul 4 · run Jul 18–20</span>
+      <h3>One tournament-style promotion weekend</h3>
+      <ul>
+        <li>February's tournament: $566K–$884K net extra wagers against a pre-event baseline. Break-even: $158K ($211K with $5K of extra costs).</li>
+        <li>Measured against the frozen forecast for July 18–27, including the following week for displaced play.</li>
+        <li>Counts as clearly above noise if the weekend alone exceeds $212K.</li>
+        <li>A second weekend would have to be ordered before the first runs, so it is not funded.</li>
+      </ul>
+      <div><button class="btn" type="button" data-evidence="placebo">Show the evidence</button></div>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card rules">
+      <h3>Go/no-go rules, checked by July 4</h3>
+      <ol>
+        <li>February lift under the stricter baseline is at least twice break-even ($317K). Currently $566K: passes.</li>
+        <li>The package covers prizes, marketing and staffing; costs outside it are $5,000 or less.</li>
+        <li>No citywide event or holiday on July 18–20, so the forecast measures the weekend cleanly.</li>
+        <li>Open to all guests, with no extra offers aimed at the heaviest-losing players.</li>
+      </ol>
+      <p class="cap">If any rule fails: inspection only, keep $98,800.</p>
+    </div>
+    <div class="card">
+      <h3>Commitment dates</h3>
+      <div class="dates">
+        <div><span class="d">Jul 1</span><span>Order the inspection. Refit and freeze the forecast on January–June. Run the go/no-go checks.</span></div>
+        <div><span class="d">Jul 2</span><span>Inspect M-1158 (two hours of downtime).</span></div>
+        <div><span class="d">Jul 4</span><span>Last day to order the July 18 promotion.</span></div>
+        <div><span class="d">Jul 18–20</span><span>Tournament weekend.</span></div>
+        <div><span class="d">Jul 21–27</span><span>Follow-up week for displaced play.</span></div>
+        <div><span class="d">Jul 28</span><span>Readout against the frozen forecast.</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Promotion downside scenarios (July net, expected house win)</h3>
+    <div class="tablewrap"><table id="t-scen"></table></div>
+    <p class="cap">Expected house win = extra wagers × 9.5%, minus the $15,000 package. Not realized win, which also depends on luck, and not full contribution after comp and food costs.</p>
+  </div>
+  <div class="card">
+    <h3>Plans compared in 10,000 simulated Julys</h3>
+    <div class="tablewrap"><table id="t-plans"></table></div>
+    <p class="cap">Conditional on assumed input ranges; not observed frequencies. The two-weekend plan scores higher only because we assumed the second weekend earns 50–100% of the first.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Not funded</h3>
+      <ul>
+        <li><b>Replace the bottom ten:</b> nine are within normal luck and nine sit in Back Forty. Buying ten costs $220,000. <button class="btn link" type="button" data-evidence="bottom">See the ranking</button></li>
+        <li><b>Move machines or add Back Forty signs:</b> the walkway closure shows that removing access shifts play to other zones. It does not show what signs would add. <button class="btn link" type="button" data-evidence="closure">See the closure</button></li>
+        <li><b>Extra technician:</b> waits cost about $4,000 a month in expected house win against an $11,520 package. <button class="btn link" type="button" data-evidence="queue">See the waits</button></li>
+        <li><b>Ridgeline maintenance:</b> slightly negative within July (−$2.7K simulated); evidence is one machine. Better as an August test.</li>
+        <li><b>Floor-wide comp change:</b> the May 1 cut raised comp cost about $1,400 a month with no measurable play gain, but the evidence is before-and-after only. <button class="btn link" type="button" data-evidence="comps">See the comp change</button></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Claims and evidence</h3>
+      <div class="tablewrap"><table id="t-claims"></table></div>
+    </div>
+  </div>
+</section>
+
+</div>
+</main>
+<footer class="gutter"><div class="inner">
+  <span>The Gilded Ace is fictional and its data is synthetic (Dashboard Royale release 0.9.0-draft). Files in real_sources (LVCVA, NOAA, Missouri Gaming Commission) are real public data, shown as context only.</span>
+  <span>Built from analysis/build_dashboard_data.py, forecast.py, checks.py and plan_options.py. Money is in US dollars; expected house win uses each game's configured payout rate.</span>
+</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="data.js"></script>
+<script src="core.js"></script>
+<script src="views.js"></script>
+</body>
+</html>
