@@ -1,0 +1,195 @@
+{
+ "plans": {
+  "R. Revised: inspect + one weekend": {
+   "cost": 16200,
+   "july_net_mean": 28837,
+   "july_net_p10": 7213,
+   "july_net_p90": 50838,
+   "chance_july_loss": 0.0,
+   "monthly_after_july": 4577
+  },
+  "A. Current plan": {
+   "cost": 25200,
+   "july_net_mean": 26173,
+   "july_net_p10": 4192,
+   "july_net_p90": 47955,
+   "chance_july_loss": 0.042,
+   "monthly_after_july": 13754
+  },
+  "B. Two promo weekends + inspect + maintenance": {
+   "cost": 40200,
+   "july_net_mean": 41671,
+   "july_net_p10": 3460,
+   "july_net_p90": 80823,
+   "chance_july_loss": 0.064,
+   "monthly_after_july": 13754
+  },
+  "C. Two promo weekends + inspect": {
+   "cost": 31200,
+   "july_net_mean": 44336,
+   "july_net_p10": 6153,
+   "july_net_p90": 83412,
+   "chance_july_loss": 0.035,
+   "monthly_after_july": 4577
+  },
+  "D. Inspect + one promo + comp pilot": {
+   "cost": 20200,
+   "july_net_mean": 24837,
+   "july_net_p10": 3213,
+   "july_net_p90": 46838,
+   "chance_july_loss": 0.04,
+   "monthly_after_july": 4577
+  },
+  "E. Two promos + inspect + comp revert": {
+   "cost": 32700,
+   "july_net_mean": 40585,
+   "july_net_p10": 2098,
+   "july_net_p90": 79898,
+   "chance_july_loss": 0.077,
+   "monthly_after_july": 2076
+  },
+  "F. Two promos + inspect + 5 leased new titles": {
+   "cost": 48100,
+   "july_net_mean": 36425,
+   "july_net_p10": -1929,
+   "july_net_p90": 75917,
+   "chance_july_loss": 0.12,
+   "monthly_after_july": 13183
+  },
+  "G. Manager-style: lease 10 replacements": {
+   "cost": 33800,
+   "july_net_mean": -15821,
+   "july_net_p10": -30406,
+   "july_net_p90": -311,
+   "chance_july_loss": 0.904,
+   "monthly_after_july": 17211
+  },
+  "H. Technician + signs + inspect": {
+   "cost": 20220,
+   "july_net_mean": -14183,
+   "july_net_p10": -15748,
+   "july_net_p90": -12598,
+   "chance_july_loss": 1.0,
+   "monthly_after_july": 5580
+  },
+  "I. Keep the whole budget": {
+   "cost": 0,
+   "july_net_mean": 0,
+   "july_net_p10": 0,
+   "july_net_p90": 0,
+   "chance_july_loss": 0.0,
+   "monthly_after_july": 0
+  }
+ },
+ "single_actions": {
+  "Inspect M-1158 x1": {
+   "cost": 1200,
+   "july_net_mean": 3224,
+   "july_net_p10": 2045,
+   "july_net_p90": 4407,
+   "chance_july_loss": 0.0,
+   "monthly_after_july": 4577
+  },
+  "Promotion weekend x1": {
+   "cost": 15000,
+   "july_net_mean": 25613,
+   "july_net_p10": 3974,
+   "july_net_p90": 47620,
+   "chance_july_loss": 0.025,
+   "monthly_after_july": 0
+  },
+  "Promotion weekend x2": {
+   "cost": 30000,
+   "july_net_mean": 41111,
+   "july_net_p10": 2870,
+   "july_net_p90": 80174,
+   "chance_july_loss": 0.068,
+   "monthly_after_july": 0
+  },
+  "Ridgeline maintenance x1": {
+   "cost": 9000,
+   "july_net_mean": -2664,
+   "july_net_p10": -8362,
+   "july_net_p90": 3006,
+   "chance_july_loss": 0.688,
+   "monthly_after_july": 9177
+  },
+  "Leased new titles x1": {
+   "cost": 3380,
+   "july_net_mean": -1582,
+   "july_net_p10": -3041,
+   "july_net_p90": -31,
+   "chance_july_loss": 0.904,
+   "monthly_after_july": 1721
+  },
+  "Extra technician x1": {
+   "cost": 11520,
+   "july_net_mean": -10576,
+   "july_net_p10": -10879,
+   "july_net_p90": -10276,
+   "chance_july_loss": 1.0,
+   "monthly_after_july": 0
+  },
+  "Revert comp price cut x1": {
+   "cost": 1500,
+   "july_net_mean": -3751,
+   "july_net_p10": -10189,
+   "july_net_p90": 2679,
+   "chance_july_loss": 0.734,
+   "monthly_after_july": -2501
+  },
+  "Comp pilot x1": {
+   "cost": 4000,
+   "july_net_mean": -4000,
+   "july_net_p10": -4000,
+   "july_net_p90": -4000,
+   "chance_july_loss": 1.0,
+   "monthly_after_july": 0
+  },
+  "Back Forty signs x1": {
+   "cost": 7500,
+   "july_net_mean": -6831,
+   "july_net_p10": -7900,
+   "july_net_p90": -5759,
+   "chance_july_loss": 1.0,
+   "monthly_after_july": 1003
+  }
+ },
+ "promo_scenarios": {
+  "Feb tournament, normal-day pre-event baseline": {
+   "net_extra_coin_in": 883713,
+   "july_net": 68599,
+   "july_net_with_5k_extra_cost": 63599
+  },
+  "Feb tournament, all-day pre-event baseline": {
+   "net_extra_coin_in": 566032,
+   "july_net": 38547,
+   "july_net_with_5k_extra_cost": 33547
+  },
+  "Half the conservative February result": {
+   "net_extra_coin_in": 283016,
+   "july_net": 11773,
+   "july_net_with_5k_extra_cost": 6773
+  },
+  "Locals Week-like result (+3.2% of a July weekend)": {
+   "net_extra_coin_in": 152928,
+   "july_net": -533,
+   "july_net_with_5k_extra_cost": -5533
+  },
+  "Zero uplift": {
+   "net_extra_coin_in": 0,
+   "july_net": -15000,
+   "july_net_with_5k_extra_cost": -20000
+  },
+  "Zero uplift, next week dips as in February": {
+   "net_extra_coin_in": -138915,
+   "july_net": -28141,
+   "july_net_with_5k_extra_cost": -33141
+  }
+ },
+ "promo_break_even": {
+  "package_only": 158562,
+  "with_5k_extra": 211416
+ },
+ "note": "Simulated probabilities are conditional on the assumed input ranges above; they are not observed frequencies."
+}

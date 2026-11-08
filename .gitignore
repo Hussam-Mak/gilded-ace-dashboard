@@ -1,0 +1,11 @@
+# Organizer dataset: clone it here yourself (see README). Not redistributed.
+dashboard-royale/
+# Local tooling
+everything-claude-code/
+.claude/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.DS_Store
+Thumbs.db

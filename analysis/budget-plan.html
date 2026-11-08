@@ -1,0 +1,390 @@
+<title>Gilded Ace July Budget Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single priced ledger column; summary bar and dates, two funded actions with rules, then evidence, deferrals and the claims appendix. */
+:root {
+  --bg: #f5f7f5;
+  --surface: #ffffff;
+  --ink: #16201c;
+  --muted: #5b6862;
+  --rule: #d9e0dc;
+  --felt: #1d6a4e;
+  --felt-soft: #e3efe9;
+  --brass: #9a6a17;
+  --brass-soft: #f4ead6;
+  --keep: #c9d2cd;
+  --warn: #9b3d2a;
+  --warn-soft: #f6e4df;
+  --display: "Bodoni Moda", "Didot", Georgia, serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1513; --surface: #161e1b; --ink: #e5ebe7; --muted: #9eaca5; --rule: #2a3531;
+    --felt: #57b98f; --felt-soft: #1b2e27; --brass: #d8a64a; --brass-soft: #2e2617; --keep: #3a4641; --warn: #e3826b; --warn-soft: #34201b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1513; --surface: #161e1b; --ink: #e5ebe7; --muted: #9eaca5; --rule: #2a3531;
+  --felt: #57b98f; --felt-soft: #1b2e27; --brass: #d8a64a; --brass-soft: #2e2617; --keep: #3a4641; --warn: #e3826b; --warn-soft: #34201b;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 880px; margin: 0 auto; padding-block: 48px 72px; display: grid; gap: 56px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+h1 { font-family: var(--display); font-weight: 600; font-size: clamp(2.1rem, 5vw, 3.1rem); line-height: 1.08; letter-spacing: -0.01em; }
+h2 { font-family: var(--display); font-weight: 600; font-size: 1.65rem; line-height: 1.2; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+section { display: grid; gap: 20px; }
+.lede { font-size: 1.12rem; }
+.muted { color: var(--muted); }
+.small { font-size: 0.92rem; }
+header { display: grid; gap: 16px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 0.9rem; color: var(--muted); }
+
+.ledger-total { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; }
+.ledger-total .big { font-family: var(--display); font-size: 2.6rem; font-weight: 600; line-height: 1; }
+.bar { display: flex; height: 40px; border-radius: 6px; overflow: hidden; gap: 2px; background: var(--bg); }
+.bar span { display: block; height: 100%; }
+.seg-inspect { background: var(--warn); }
+.seg-promo { background: var(--brass); }
+.seg-keep { background: var(--keep); }
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px 20px; font-size: 0.92rem; }
+.legend div { display: flex; gap: 10px; align-items: baseline; min-width: 0; }
+.sw { width: 12px; height: 12px; border-radius: 3px; flex: none; transform: translateY(1px); }
+.legend b { font-weight: 500; }
+.fallback { background: var(--warn-soft); border-radius: 8px; padding: 12px 16px; font-size: 0.93rem; }
+
+.panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 24px; display: grid; gap: 14px; }
+.panel ul, .panel ol { margin: 0; padding-left: 1.2rem; display: grid; gap: 6px; }
+
+.actions { display: grid; gap: 20px; }
+.action { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 24px; display: grid; gap: 18px; }
+.action-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 20px; }
+.action-head .cost { font-family: var(--mono); font-size: 1.35rem; font-weight: 500; }
+.tag { display: inline-flex; align-items: center; font-size: 0.78rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.02em; }
+.conf-high { background: var(--felt-soft); color: var(--felt); }
+.conf-med { background: var(--brass-soft); color: var(--brass); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px 28px; }
+.fact { display: grid; gap: 4px; min-width: 0; align-content: start; }
+.k { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.fact p { font-size: 0.96rem; }
+.rules { display: grid; gap: 8px; }
+.rules ol { margin: 0; padding-left: 1.2rem; display: grid; gap: 6px; font-size: 0.95rem; }
+.pass { color: var(--felt); font-weight: 600; }
+
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; }
+th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; font-size: 0.8rem; color: var(--muted); letter-spacing: 0.03em; }
+td.r, th.r { text-align: right; padding-right: 0; white-space: nowrap; }
+td.neg { color: var(--warn); }
+.src { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
+.type { display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.t-fact { background: var(--felt-soft); color: var(--felt); }
+.t-model { background: var(--brass-soft); color: var(--brass); }
+.t-assume { background: var(--warn-soft); color: var(--warn); }
+
+.dates { display: grid; border-top: 1px solid var(--rule); }
+.dates div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--rule); font-size: 0.95rem; }
+.dates .d { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); padding-top: 2px; }
+
+.timeline { display: grid; grid-template-columns: repeat(30, 1fr); gap: 2px; }
+.day { height: 10px; background: var(--rule); border-radius: 2px; }
+.day.on-promo { background: var(--brass); }
+.day.on-insp { background: var(--warn); }
+.day.on-measure { background: var(--muted); opacity: 0.55; }
+.tl-rows { display: grid; gap: 14px; }
+.tl-row { display: grid; grid-template-columns: 170px 1fr; gap: 14px; align-items: center; }
+.tl-row .lbl { font-size: 0.88rem; }
+.tl-axis { display: grid; grid-template-columns: 170px 1fr; gap: 14px; }
+.tl-axis .ticks { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+@media (max-width: 560px) {
+  .tl-row, .tl-axis { grid-template-columns: 1fr; gap: 6px; }
+  .tl-axis > span:first-child { display: none; }
+  .dates div { grid-template-columns: 1fr; gap: 2px; }
+}
+
+.placebo { display: grid; gap: 6px; }
+.pl-track { position: relative; height: 44px; border-bottom: 1px solid var(--rule); }
+.pl-dot { position: absolute; top: 16px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--muted); opacity: 0.75; }
+.pl-dot.real { background: var(--brass); opacity: 1; width: 16px; height: 16px; margin-left: -8px; top: 14px; box-shadow: 0 0 0 2px var(--bg); }
+.pl-zero { position: absolute; top: 4px; bottom: 0; width: 1px; background: var(--rule); }
+.pl-axis { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+
+.ruled { display: grid; border-top: 1px solid var(--rule); }
+.ruled div { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 8px 24px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.ruled b { font-weight: 600; }
+@media (max-width: 560px) { .ruled div { grid-template-columns: 1fr; } }
+
+.notes { display: grid; gap: 10px; font-size: 0.93rem; color: var(--muted); }
+.notes ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 6px; }
+footer { font-size: 0.82rem; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 18px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Floor analytics · Operations budget, July 1–30, 2025 · Revised</span>
+    <h1>Inspect the one leak. Run one tournament if it passes its checks. Keep the rest.</h1>
+    <p class="lede">The ten lowest earners are mostly unlucky or in the quietest zone, not broken. This plan commits $16,200 to two actions the data supports and keeps $83,800. If the promotion fails its go/no-go checks on July 4, it spends $1,200 and keeps $98,800.</p>
+    <div class="meta"><span>The Gilded Ace (fictional casino, synthetic data)</span><span>Data window: Jan 1 – Jun 30, 2025</span><span>TAMU Datathon 2026 · Dashboard Royale</span></div>
+  </header>
+
+  <section aria-labelledby="split">
+    <div class="ledger-total">
+      <h2 id="split">Where the $100,000 goes</h2>
+      <span class="big num">$16,200 <span class="muted" style="font-size:1rem;font-family:var(--body);font-weight:400">committed</span></span>
+    </div>
+    <div class="bar" role="img" aria-label="Budget split to scale: inspection $1,200, one promotion weekend $15,000, kept $83,800">
+      <span class="seg-inspect" style="width:1.2%"></span>
+      <span class="seg-promo" style="width:15%"></span>
+      <span class="seg-keep" style="width:83.8%"></span>
+    </div>
+    <div class="legend">
+      <div><span class="sw seg-inspect"></span><span><b>Inspect M-1158</b> <span class="num">$1,200</span></span></div>
+      <div><span class="sw seg-promo"></span><span><b>One promotion weekend</b> <span class="num">$15,000</span></span></div>
+      <div><span class="sw seg-keep"></span><span><b>Kept</b> <span class="num">$83,800</span></span></div>
+    </div>
+    <p class="fallback"><b>Fallback:</b> if any promotion go/no-go rule fails on July 4, cancel the promotion, spend $1,200 on the inspection only, and keep $98,800.</p>
+  </section>
+
+  <section aria-labelledby="dates">
+    <h2 id="dates">Commitment dates</h2>
+    <div class="dates">
+      <div><span class="d">Jul 1</span><span>Order the M-1158 inspection (one-day lead). Refit and freeze the coin-in forecast on January–June data. Run the promotion go/no-go checks.</span></div>
+      <div><span class="d">Jul 2</span><span>Inspect M-1158: two hours of downtime. Reconcile paytable, software configuration, meters and jackpot accounting against the published Desert Gold sheet.</span></div>
+      <div><span class="d">Jul 4</span><span>Last day to order the promotion for July 18 (14-day lead). Go or no-go.</span></div>
+      <div><span class="d">Jul 18–20</span><span>Tournament weekend, Friday to Sunday.</span></div>
+      <div><span class="d">Jul 21–27</span><span>Follow-up week, measured for displaced play.</span></div>
+      <div><span class="d">Jul 28</span><span>Readout against the frozen forecast. Decide on an August tournament and an August maintenance test.</span></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="verdict">
+    <span class="eyebrow">The manager's plan</span>
+    <h2 id="verdict">Replacing the ten lowest earners would cost $220,000 and target the wrong cause</h2>
+    <ul>
+      <li>9 of the 10 earned what luck predicts for the bets they took. Across all 310 machines the luck scores form the bell curve chance alone produces.</li>
+      <li>9 of the 10 sit in Back Forty, where the same games earn 0.65× what they earn elsewhere on the same day. A new machine in the same slot would face the same traffic.</li>
+      <li>Three were on the floor for only 49 to 132 days, so six-month totals understate them.</li>
+      <li>The one machine on the list that fails the luck test, M-1158, calls for an inspection, not a new cabinet.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="actions">
+    <h2 id="actions">The two funded actions</h2>
+    <div class="actions">
+
+      <article class="action">
+        <div class="action-head">
+          <div style="display:grid;gap:6px"><span class="eyebrow">Payout · 1 inspection</span><h3>Inspect and reconcile M-1158</h3></div>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span class="tag conf-high">Strong evidence of a problem</span><span class="cost">$1,200</span></div>
+        </div>
+        <div class="facts">
+          <div class="fact"><span class="k">Evidence</span><p>A 38.57% hit rate across 674,454 spins, against 31.54% for the other 47 machines on the same Desert Gold configuration. The gap is about 124 standard errors and holds in every month. Hold ran about 3% against a configured 10%.</p></div>
+          <div class="fact"><span class="k">What the $1,200 buys</span><p>Information. The inspection identifies whether the installed paytable, software, meters or jackpot accounting differ from the published sheet. Any repair is separate: its price, timing and success are unknown.</p></div>
+          <div class="fact"><span class="k">Break-even</span><p>If a correction follows, expected house win rises by about $200 a day, so the inspection pays back in about six days. If nothing is found, it costs $1,200 and narrows the cause to accounting or meters.</p></div>
+          <div class="fact"><span class="k">Success criteria</span><p>A documented reconciliation within one day. After any correction, hit rate over the next three days falls within 30.6%–32.4% (±2 standard errors at about 3,700 spins a day). July hold is not a criterion: it swings too much month to month.</p></div>
+        </div>
+        <p class="src">Sources: machine_day (paid_spins, payout_positive_spins, sum_bet_squared), game_math, placements, operations · analysis/checks.py</p>
+      </article>
+
+      <article class="action">
+        <div class="action-head">
+          <div style="display:grid;gap:6px"><span class="eyebrow">Demand · 1 weekend · conditional</span><h3>One tournament-style promotion, Friday–Sunday July 18–20</h3></div>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span class="tag conf-med">Moderate evidence</span><span class="cost">$15,000</span></div>
+        </div>
+        <div class="facts">
+          <div class="fact"><span class="k">Evidence</span><p>Against a baseline built only from January 1 – February 20, the February slot tournament ran $705K–$859K above expected over three days. The following week ran $139K below to $24K above. Net excess wagers: <span class="num">$566K–$884K</span>. These are forecast deviations, not proof of cause.</p></div>
+          <div class="fact"><span class="k">Why the range</span><p>The low end uses every pre-event day, including CES, Super Bowl and holiday days, which raise the baseline. The high end uses ordinary pre-event days only. An earlier estimate of $803K used a baseline that included later months and is no longer used.</p></div>
+          <div class="fact"><span class="k">Break-even</span><p>At a 9.5% expected hold, the $15,000 package needs <span class="num">$158K</span> of net extra wagers; with $5,000 of costs outside the package, <span class="num">$211K</span>. The conservative February result is 3.6× the first figure.</p></div>
+          <div class="fact"><span class="k">Why these dates</span><p>July 18–20 is the first full Friday–Sunday after the 14-day lead, stays clear of July 4, and matches the February format. A second July weekend would have to be ordered before the first one runs, so it is deferred to August.</p></div>
+        </div>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Scenario (net extra wagers, event + following week)</th><th class="r">Extra wagers</th><th class="r">July net</th><th class="r">Net with $5K extra cost</th></tr></thead>
+            <tbody>
+              <tr><td>Repeats February, ordinary-day baseline</td><td class="r num">$884K</td><td class="r num">+$68.6K</td><td class="r num">+$63.6K</td></tr>
+              <tr><td>Repeats February, all-day baseline</td><td class="r num">$566K</td><td class="r num">+$38.5K</td><td class="r num">+$33.5K</td></tr>
+              <tr><td>Half the conservative February result</td><td class="r num">$283K</td><td class="r num">+$11.8K</td><td class="r num">+$6.8K</td></tr>
+              <tr><td>Like Locals Week (+3.2% of a July weekend)</td><td class="r num">$153K</td><td class="r num neg">−$0.5K</td><td class="r num neg">−$5.5K</td></tr>
+              <tr><td>Zero uplift</td><td class="r num">$0</td><td class="r num neg">−$15.0K</td><td class="r num neg">−$20.0K</td></tr>
+              <tr><td>Zero uplift, following week dips as in February</td><td class="r num">−$139K</td><td class="r num neg">−$28.1K</td><td class="r num neg">−$33.1K</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted small">July net is expected house win (extra wagers × 9.5%) minus costs. It is not realized win, which also depends on luck, and not full contribution, which also nets out comp and food-and-drink costs.</p>
+
+        <div class="rules">
+          <span class="k">Go/no-go rules, checked by July 4</span>
+          <ol>
+            <li>The February lift under the stricter all-day baseline is at least twice break-even ($317K). <span class="pass">Currently $566K: passes.</span></li>
+            <li>The package price is confirmed to include prizes, marketing and staffing, with costs outside it estimated at $5,000 or less.</li>
+            <li>No citywide event or holiday falls on July 18–20, so the frozen forecast measures the weekend cleanly.</li>
+            <li>The promotion is open to all guests, with no extra offers aimed at the heaviest-losing players.</li>
+          </ol>
+          <p class="small">If any rule fails, take the inspection-only fallback.</p>
+        </div>
+
+        <div class="facts">
+          <div class="fact"><span class="k">Success criteria</span><p>Net extra wagers for July 18–27 against the frozen forecast exceed $158K (break-even). The lift counts as clearly above noise if the weekend alone exceeds $212K, the largest deviation among 20 ordinary weekends.</p></div>
+          <div class="fact"><span class="k">What gets reported</span><p>Property-wide wagers and expected house win against the forecast, realized house win, and contribution after the package, comp cost and food-and-drink cost of goods. Attendance alone is not a success measure.</p></div>
+        </div>
+        <p class="src">Sources: property_day, calendar_day, events (announced_date ≤ forecast freeze) · analysis/forecast.py, analysis/checks.py, analysis/plan_options.py</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section aria-labelledby="tested">
+    <h2 id="tested">How we tested the evidence</h2>
+    <p>No July data exists, so each claim was stress-tested on January to June.</p>
+    <div style="display:grid;gap:10px">
+      <span class="eyebrow">Placebo test · forecast deviation on 20 ordinary weekends vs. the slot tournament ($K wagers)</span>
+      <div class="placebo" role="img" aria-label="Dot strip: 20 ordinary weekends show forecast deviations between minus 300 and plus 212 thousand dollars; the slot tournament sits far to the right at plus 803 thousand">
+        <div class="pl-track" id="pl-track"></div>
+        <div class="pl-axis"><span>−$300K</span><span>$0</span><span>+$300K</span><span>+$600K</span><span>+$900K</span></div>
+      </div>
+      <p class="muted small">The tournament ranks first of 21 weekends, a rank p-value of about 0.05. With only 20 ordinary weekends, that is the strongest statement the test supports. Included weekends: every Friday–Sunday from January 1 to June 30 with no citywide event, casino promotion or federal holiday on any of the three days. This test uses the January–April forecast; the pre-event baseline above is the stricter estimate of size.</p>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Check</th><th>Result</th><th>What it means for July</th></tr></thead>
+        <tbody>
+          <tr><td>Inspection: three-day hit-rate test</td><td class="num">one-day gap = 9.2 SE</td><td>A few days of play show whether a correction worked.</td></tr>
+          <tr><td>Promotion: weekend deviation vs. ordinary weekends</td><td class="num">largest ordinary = +$212K</td><td>A July lift above $212K stands out from every ordinary weekend in the data.</td></tr>
+          <tr><td>Forecast holdout, May–June</td><td class="num">MAE $47K vs $69K vs $218K</td><td>Weekday-plus-calendar forecast beats weekday averages and a flat average, so it can serve as the July baseline.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="compared">
+    <h2 id="compared">Plans we compared</h2>
+    <p>Each plan was run through 10,000 simulated Julys. The ranges below are conditional on the input ranges we assumed (listed under Assumptions); they are not observed frequencies.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Plan</th><th class="r">Cost</th><th class="r">Simulated July net</th><th class="r">10th–90th percentile</th></tr></thead>
+        <tbody>
+          <tr><td><b>Recommended:</b> inspect + one weekend</td><td class="r num">$16,200</td><td class="r num"><b>+$28.8K</b></td><td class="r num">+$7.2K to +$50.8K</td></tr>
+          <tr><td>Inspect + two weekends + Ridgeline maintenance</td><td class="r num">$40,200</td><td class="r num">+$41.7K</td><td class="r num">+$3.5K to +$80.8K</td></tr>
+          <tr><td>Inspect + one weekend + Ridgeline maintenance</td><td class="r num">$25,200</td><td class="r num">+$26.2K</td><td class="r num">+$4.2K to +$48.0K</td></tr>
+          <tr><td>Keep the whole budget</td><td class="r num">$0</td><td class="r num">$0</td><td class="r num">$0</td></tr>
+          <tr><td>Technician + Back Forty signs + inspect</td><td class="r num">$20,220</td><td class="r num neg">−$14.2K</td><td class="r num">−$15.7K to −$12.6K</td></tr>
+          <tr><td>Manager-style: lease 10 replacements</td><td class="r num">$33,800</td><td class="r num neg">−$15.8K</td><td class="r num">−$30.4K to −$0.3K</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted small">The two-weekend plan scores higher only because we assumed the second weekend earns 50–100% of the first. The data has no evidence for that, and the second order must be placed before the first weekend runs, so it is deferred.</p>
+  </section>
+
+  <section aria-labelledby="july">
+    <h2 id="july">July at a glance</h2>
+    <div class="tl-rows" role="img" aria-label="July timeline: inspection on July 2; promotion weekend July 18 to 20; measurement week July 21 to 27">
+      <div class="tl-axis"><span></span><div class="ticks"><span>Jul 1</span><span>Jul 8</span><span>Jul 15</span><span>Jul 22</span><span>Jul 30</span></div></div>
+      <div class="tl-row"><span class="lbl">Inspect M-1158</span><div class="timeline" id="tl-insp"></div></div>
+      <div class="tl-row"><span class="lbl">Promotion weekend</span><div class="timeline" id="tl-promo"></div></div>
+      <div class="tl-row"><span class="lbl">Measurement week</span><div class="timeline" id="tl-measure"></div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="deferred">
+    <h2 id="deferred">Deferred to August</h2>
+    <div class="ruled">
+      <div><b>Ridgeline preventive maintenance</b><span>Ridgeline machines fault 3.6× as often per machine as Halcyon's. But in a July-only horizon the sweep is slightly negative (−$2.7K simulated), and the only direct evidence is one maintained machine. In August, run it as a test: compare Ridgeline's fault rate with Northwind and Halcyon over the same 30 days, net of the 90 minutes of downtime per machine.</span></div>
+      <div><b>A second tournament</b><span>Schedule one in August only if July 18–27 clears break-even and the weekend alone exceeds $212K. Then the second order rests on two observed events, not one.</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="ruled">
+    <h2 id="ruled">Not funded</h2>
+    <div class="ruled">
+      <div><b>Replace the bottom ten</b><span>Nine are within normal luck and nine share the quietest zone. Buying ten machines costs $220,000, more than twice the budget.</span></div>
+      <div><b>Move machines or add Back Forty signs</b><span>When the walkway into Back Forty closed from March 3 to April 6, the zone lost about $45K a day in wagers, the rest of the floor gained about $58K, and floor totals stayed on forecast. That shows removing access shifted play elsewhere. It does not show what signs would do, so their July value is unproven at $7,500.</span></div>
+      <div><b>Add a technician to a shift</b><span>Waiting for a technician costs an estimated $4,000 a month in expected house win, against an $11,520 package. Most long waits came from scheduled technicians not showing up, which needs management, not budget.</span></div>
+      <div><b>Change the comp rate floor-wide</b><span>The May 1 cut lowered the points price of every comp by about 53%. Comp cost rose about $1,400 a month with no measurable play gain, but the evidence is before-and-after only.</span></div>
+      <div><b>Bigger guest survey</b><span>Its main open question, why evening dining fell in May and June, matters less than the funded actions.</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="appendix">
+    <h2 id="appendix">Claims and evidence</h2>
+    <p class="small"><span class="type t-fact">Verified fact</span> read directly from the data. <span class="type t-model">Model estimate</span> depends on a method with stated limits. <span class="type t-assume">Assumption</span> chosen by us, not measured.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Claim</th><th>Type</th><th>Source</th><th>Limitation</th></tr></thead>
+        <tbody>
+          <tr><td>M-1158 hits 38.57% of 674,454 spins vs 31.54% on the other 47 Desert Gold machines</td><td><span class="type t-fact">Verified fact</span></td><td class="src">machine_day, game_math</td><td>Does not identify the cause.</td></tr>
+          <tr><td>309 of 310 machines are consistent with luck</td><td><span class="type t-model">Model estimate</span></td><td class="src">machine_day sum_bet_squared × game variance</td><td>Normal approximation is weaker for 18 very-high-volatility games.</td></tr>
+          <tr><td>9 of the bottom 10 by house win are in Back Forty</td><td><span class="type t-fact">Verified fact</span></td><td class="src">prepared_daily_view</td><td>Ranking uses raw six-month house win.</td></tr>
+          <tr><td>Back Forty earns 0.65× the same game elsewhere</td><td><span class="type t-model">Model estimate</span></td><td class="src">prepared_daily_view, game-and-day index</td><td>Assumes the game mix within each zone is comparable.</td></tr>
+          <tr><td>During the walkway closure Back Forty fell from 64% to 44% of the floor's rate while floor totals stayed on forecast</td><td><span class="type t-model">Model estimate</span></td><td class="src">prepared_daily_view, floor_walkways, forecast</td><td>Shows displacement when access is removed; says nothing direct about signage.</td></tr>
+          <tr><td>The February tournament produced $566K–$884K of net excess wagers</td><td><span class="type t-model">Model estimate</span></td><td class="src">property_day, pre-event weekday baseline</td><td>One event; a forecast deviation, not a proven causal effect.</td></tr>
+          <tr><td>The tournament ranks first of 21 weekends</td><td><span class="type t-fact">Verified fact</span></td><td class="src">checks.py placebo test</td><td>Only 20 comparison weekends; rank p ≈ 0.05.</td></tr>
+          <tr><td>Forecast MAE $47K vs $69K vs $218K on the May–June holdout</td><td><span class="type t-fact">Verified fact</span></td><td class="src">forecast.py</td><td>Two months of holdout; events known only if announced by April 30.</td></tr>
+          <tr><td>Promotion break-even is $158K of extra wagers</td><td><span class="type t-model">Model estimate</span></td><td class="src">$15,000 ÷ 9.5% expected hold</td><td>Expected, not realized, house win.</td></tr>
+          <tr><td>Ridgeline machines fault 3.6× as often per machine as Halcyon's</td><td><span class="type t-fact">Verified fact</span></td><td class="src">operations, machines</td><td>Cause of the difference unknown.</td></tr>
+          <tr><td>The May 1 comp change cut points prices about 53% in every tier</td><td><span class="type t-fact">Verified fact</span></td><td class="src">loyalty_ledger</td><td>Effect on play measured before-and-after only.</td></tr>
+          <tr><td>A correction on M-1158 recovers about $200 a day</td><td><span class="type t-assume">Assumption</span></td><td class="src">expected minus observed hold</td><td>Depends on a repair that is not yet scoped.</td></tr>
+          <tr><td>Simulated July net of +$28.8K for the recommended plan</td><td><span class="type t-assume">Assumption-based</span></td><td class="src">plan_options.py</td><td>Conditional on assumed input ranges; not an observed probability.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="notes" aria-labelledby="assume">
+    <h2 id="assume" style="color:var(--ink)">Assumptions</h2>
+    <ul>
+      <li>All benefits are expected house win at the floor's 9.5% hold, minus catalog costs charged in full. Benefits count only for days after each lead time inside July 1–30.</li>
+      <li>The July forecast is refit on January–June and frozen on July 1, using only events announced by then. The after-the-fact lift for Locals Week (announced May 26) was never a forecast input.</li>
+      <li>Simulation inputs: promotion lift from a Locals Week-like result up to a repeat of February; inspection fix succeeds 50–100% of the time; Ridgeline fault cut 0–75%.</li>
+      <li>Costs outside the promotion package are capped at $5,000 in the scenarios. Comp cost already sits inside food-and-drink cost of goods and is counted once.</li>
+    </ul>
+  </section>
+
+  <footer>Prepared for the TAMU Datathon 2026 Dashboard Royale challenge. The Gilded Ace is fictional and its data is synthetic; findings describe this dataset only. Code with saved outputs: analysis/forecast.py, analysis/checks.py, analysis/plan_options.py.</footer>
+</div>
+
+<script>
+(function () {
+  function fill(id, ranges, cls) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    for (var d = 1; d <= 30; d++) {
+      var on = ranges.some(function (r) { return d >= r[0] && d <= r[1]; });
+      var s = document.createElement('span');
+      s.className = 'day' + (on ? ' ' + cls : '');
+      s.title = 'July ' + d;
+      el.appendChild(s);
+    }
+  }
+  fill('tl-insp', [[2, 2]], 'on-insp');
+  fill('tl-promo', [[18, 20]], 'on-promo');
+  fill('tl-measure', [[21, 27]], 'on-measure');
+
+  var track = document.getElementById('pl-track');
+  if (track) {
+    var lo = -300, hi = 900, pos = function (v) { return ((v - lo) / (hi - lo) * 100) + '%'; };
+    var z = document.createElement('span'); z.className = 'pl-zero'; z.style.left = pos(0); track.appendChild(z);
+    [-300, -211, -186, -117, -87, -79, -76, -62, -62, -53, -26, -21, -3, -1, 19, 33, 36, 109, 187, 212].forEach(function (v) {
+      var s = document.createElement('span'); s.className = 'pl-dot'; s.style.left = pos(v);
+      s.title = 'Ordinary weekend: ' + (v < 0 ? '−$' + (-v) : '+$' + v) + 'K'; track.appendChild(s);
+    });
+    var r = document.createElement('span'); r.className = 'pl-dot real'; r.style.left = pos(803);
+    r.title = 'Slot tournament: +$803K'; track.appendChild(r);
+  }
+})();
+</script>

@@ -1,0 +1,164 @@
+{
+ "fake_promotion": {
+  "n_weekends": 20,
+  "n_holdout_weekends": 8,
+  "mean_lift": -34393,
+  "sd_lift": 122558,
+  "max_lift": 212453,
+  "min_lift": -300390,
+  "p95_lift": 186791,
+  "tournament_lift": 803006,
+  "weekends_at_or_above_tournament": 0,
+  "tournament_z": 6.83,
+  "weekends": [
+   {
+    "friday": "2025-01-03",
+    "lift": -21239,
+    "holdout": false
+   },
+   {
+    "friday": "2025-01-17",
+    "lift": 33198,
+    "holdout": false
+   },
+   {
+    "friday": "2025-01-24",
+    "lift": -211151,
+    "holdout": false
+   },
+   {
+    "friday": "2025-01-31",
+    "lift": -79390,
+    "holdout": false
+   },
+   {
+    "friday": "2025-02-14",
+    "lift": -1092,
+    "holdout": false
+   },
+   {
+    "friday": "2025-02-28",
+    "lift": -52976,
+    "holdout": false
+   },
+   {
+    "friday": "2025-03-07",
+    "lift": 109243,
+    "holdout": false
+   },
+   {
+    "friday": "2025-03-14",
+    "lift": -62317,
+    "holdout": false
+   },
+   {
+    "friday": "2025-03-28",
+    "lift": -86567,
+    "holdout": false
+   },
+   {
+    "friday": "2025-04-11",
+    "lift": 36198,
+    "holdout": false
+   },
+   {
+    "friday": "2025-04-18",
+    "lift": 212453,
+    "holdout": false
+   },
+   {
+    "friday": "2025-04-25",
+    "lift": 186791,
+    "holdout": false
+   },
+   {
+    "friday": "2025-05-02",
+    "lift": -61951,
+    "holdout": true
+   },
+   {
+    "friday": "2025-05-09",
+    "lift": -25707,
+    "holdout": true
+   },
+   {
+    "friday": "2025-05-23",
+    "lift": -3133,
+    "holdout": true
+   },
+   {
+    "friday": "2025-05-30",
+    "lift": -117159,
+    "holdout": true
+   },
+   {
+    "friday": "2025-06-06",
+    "lift": -185718,
+    "holdout": true
+   },
+   {
+    "friday": "2025-06-13",
+    "lift": 19312,
+    "holdout": true
+   },
+   {
+    "friday": "2025-06-20",
+    "lift": -76266,
+    "holdout": true
+   },
+   {
+    "friday": "2025-06-27",
+    "lift": -300390,
+    "holdout": true
+   }
+  ],
+  "tournament_rank": "1 of 21",
+  "rank_p_value": 0.048,
+  "exclusion_rule": "Fri-Sun weekends Jan 1 - Jun 30 with no citywide event, casino promotion or federal holiday on any of the three days."
+ },
+ "tournament_pre_event": {
+  "all_pre_event_days": {
+   "event_3d": 704946,
+   "next_7d": -138915,
+   "net": 566032,
+   "net_theo_at_9_5pct": 53773
+  },
+  "normal_pre_event_days": {
+   "event_3d": 859339,
+   "next_7d": 24374,
+   "net": 883713,
+   "net_theo_at_9_5pct": 83953
+  },
+  "break_even_coin_in": 157895
+ },
+ "promotion_detection": {
+  "confirm_threshold": 167215,
+  "chance_confirmed": {
+   "200000": 0.495,
+   "300000": 0.789,
+   "500000": 0.993,
+   "717000": 1.0,
+   "803000": 1.0
+  }
+ },
+ "inspection_detection": {
+  "spins_per_day": 3726,
+  "published_hit_rate": 0.31544,
+  "current_hit_rate": 0.3857,
+  "one_day_se": 0.0076,
+  "gap_in_se_one_day": 9.2
+ },
+ "maintenance_detection": {
+  "weekly_mean": 22.3,
+  "weekly_variance": 21.3,
+  "dispersion_ratio": 0.96,
+  "expected_faults_23d_no_effect": 73.3,
+  "significant_if_at_most": 59,
+  "chance_detected": {
+   "20%": 0.553,
+   "30%": 0.872,
+   "50%": 1.0,
+   "75%": 1.0
+  }
+ }
+}
