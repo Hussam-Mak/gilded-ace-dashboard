@@ -1,0 +1,247 @@
+{
+ "C1_luck_distribution": {
+  "machines": 310,
+  "mean": -0.067,
+  "sd": 1.095,
+  "beyond_2": 20,
+  "expected_beyond_2": 14.1,
+  "beyond_3": 1
+ },
+ "C2_bottom_ten": {
+  "rows": [
+   [
+    "M-5076",
+    "Back Forty",
+    49,
+    3573.0,
+    -1.85,
+    -0.0
+   ],
+   [
+    "M-1158",
+    "Back Forty",
+    181,
+    15796.0,
+    -4.57,
+    124.2
+   ],
+   [
+    "M-1120",
+    "Back Forty",
+    132,
+    16355.0,
+    -0.79,
+    0.6
+   ],
+   [
+    "M-1118",
+    "High-Limit Room",
+    55,
+    20050.0,
+    -0.65,
+    1.0
+   ],
+   [
+    "M-1238",
+    "Back Forty",
+    181,
+    24933.0,
+    -1.82,
+    0.3
+   ],
+   [
+    "M-1181",
+    "Back Forty",
+    181,
+    26977.0,
+    -2.41,
+    2.1
+   ],
+   [
+    "M-1035",
+    "Back Forty",
+    181,
+    30304.0,
+    -0.14,
+    -0.8
+   ],
+   [
+    "M-1179",
+    "Back Forty",
+    181,
+    30394.0,
+    -1.46,
+    1.4
+   ],
+   [
+    "M-1017",
+    "Back Forty",
+    181,
+    31940.0,
+    0.58,
+    -0.9
+   ],
+   [
+    "M-1265",
+    "Back Forty",
+    181,
+    32071.0,
+    -0.06,
+    0.1
+   ]
+  ],
+  "in_back_forty": 9,
+  "within_2_luck_and_normal_hits": 9
+ },
+ "C3_m1158": {
+  "spins": 674454,
+  "hit_rate": 0.3857,
+  "published": 0.3154,
+  "standard_errors": 124.2,
+  "other_desert_gold_rate": 0.3154,
+  "other_machines": 47,
+  "monthly": [
+   [
+    "01",
+    0.3849
+   ],
+   [
+    "02",
+    0.385
+   ],
+   [
+    "03",
+    0.3835
+   ],
+   [
+    "04",
+    0.3845
+   ],
+   [
+    "05",
+    0.3886
+   ],
+   [
+    "06",
+    0.3876
+   ]
+  ]
+ },
+ "C4_zone_index": {
+  "Main Entrance": 1.187,
+  "High-Limit Room": 0.993,
+  "Center Pit": 1.127,
+  "Bar Row": 1.017,
+  "Hotel Corridor": 1.008,
+  "Back Forty": 0.654,
+  "Garage Entrance": 0.95
+ },
+ "C5_closure": {
+  "back_forty_share": [
+   [
+    "1 before",
+    0.643
+   ],
+   [
+    "2 closed",
+    0.443
+   ],
+   [
+    "3 after",
+    0.615
+   ]
+  ],
+  "floor_forecast_residual_per_day": {
+   "before": -8546,
+   "closed": 2162
+  }
+ },
+ "C6_downtime": {
+  "faults": [
+   [
+    "Halcyon",
+    222,
+    3.02
+   ],
+   [
+    "Northwind",
+    305,
+    3.0
+   ],
+   [
+    "Ridgeline",
+    680,
+    2.9
+   ]
+  ],
+  "faults_per_machine_month": {
+   "Halcyon": 0.337,
+   "Northwind": 0.509,
+   "Ridgeline": 1.228
+  },
+  "ridgeline_vs_halcyon": 3.64
+ },
+ "C7_players": {
+  "top_decile_theo_share": 0.6637,
+  "share_ahead": 0.1361,
+  "total_net": -15585461,
+  "total_theo": 15485021
+ },
+ "C8_comp_price": [
+  [
+   "Base",
+   "after",
+   7.02
+  ],
+  [
+   "Base",
+   "before",
+   15.02
+  ],
+  [
+   "Gold",
+   "after",
+   5.65
+  ],
+  [
+   "Gold",
+   "before",
+   12.0
+  ],
+  [
+   "Platinum",
+   "after",
+   4.24
+  ],
+  [
+   "Platinum",
+   "before",
+   9.02
+  ]
+ ],
+ "C9_forecast_mae": {
+  "b0": 218258,
+  "b1": 68699,
+  "m2": 46627
+ },
+ "C10_tournament": {
+  "pre_event": {
+   "all_pre_event_days": {
+    "event_3d": 704946,
+    "next_7d": -138915,
+    "net": 566032,
+    "net_theo_at_9_5pct": 53773
+   },
+   "normal_pre_event_days": {
+    "event_3d": 859339,
+    "next_7d": 24374,
+    "net": 883713,
+    "net_theo_at_9_5pct": 83953
+   },
+   "break_even_coin_in": 157895
+  },
+  "placebo_rank": "1 of 21",
+  "placebo_max": 212453,
+  "placebo_weekends": 20
+ }
+}

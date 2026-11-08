@@ -178,6 +178,23 @@ traffic_day = rows(f"""SELECT strftime(CAST(hour_start_local - INTERVAL 6 HOUR A
   SUM(entries_count), COUNT(*) FROM {ZT} WHERE counter_status = 'ok' GROUP BY 1, 2 ORDER BY 1, 2""")
 traffic_hour = rows(f"""SELECT zone_id, local_hour, round(avg(entries_count), 1) FROM {ZT} WHERE counter_status = 'ok' GROUP BY 1, 2 ORDER BY 1, 2""")
 
+# ---------- reference-day replay for the floor's status lights ----------
+# The floor shows the last gaming day of the selected period. For each of those six
+# month-end days we export minutes occupied per machine and local hour, plus the
+# fault-repair tickets that were open at any point that day.
+REF_DATES = [r[0] for r in rows(f"SELECT strftime(max(gaming_date), '%Y-%m-%d') FROM {CAL} GROUP BY strftime(gaming_date, '%Y-%m') ORDER BY 1")]
+ref_list = ", ".join(f"'{d}'" for d in REF_DATES)
+ref_occ = {}
+for d, m, h, mins in con.sql(f"""SELECT strftime(gaming_date, '%Y-%m-%d'), machine_id, local_hour, round(SUM(occupied_seconds) / 60.0)
+    FROM {p('5_optional/machine_hour')} WHERE active AND strftime(gaming_date, '%Y-%m-%d') IN ({ref_list}) GROUP BY 1, 2, 3""").fetchall():
+    ref_occ.setdefault(d, {}).setdefault(m, [0] * 24)[h] = int(mins)
+ref_faults = rows(f"""WITH o AS (SELECT machine_id, opened_at_local op, work_started_at_utc + (opened_at_local - opened_at_utc) ws,
+    available_at_utc + (opened_at_local - opened_at_utc) av FROM {OPS} WHERE event_type = 'fault_repair')
+  SELECT DISTINCT machine_id, strftime(op, '%Y-%m-%d %H:%M'), strftime(ws, '%Y-%m-%d %H:%M'), strftime(av, '%Y-%m-%d %H:%M')
+  FROM o, (SELECT CAST(unnest([{ref_list}]) AS DATE) d) r
+  WHERE av >= CAST(r.d AS TIMESTAMP) + INTERVAL 6 HOUR AND op < CAST(r.d AS TIMESTAMP) + INTERVAL 30 HOUR ORDER BY 2""")
+game_sheets = rows(f"SELECT config_id, theme, configured_rtp, volatility_class, min_bet_cents, max_bet_cents, bet_options_cents FROM {GM} ORDER BY 1")
+
 # ---------- context ----------
 # LVCVA and Missouri Gaming Commission tables are not cleared for redistribution
 # (dashboard-royale/reference/SOURCE_TERMS.md), so the public build leaves them out.
@@ -219,6 +236,9 @@ DATA_OUT = dict(
     slots_cols=["slot", "zone", "bank", "x", "y"], slots=slots,
     traffic_day_cols=["date", "zone", "entries", "ok_hours"], traffic_day=traffic_day,
     traffic_hour_cols=["zone", "hour", "avg_entries"], traffic_hour=traffic_hour,
+    ref_dates=REF_DATES, ref_occ_minutes=ref_occ,
+    ref_faults_cols=["machine", "opened_local", "work_started_local", "available_local"], ref_faults=ref_faults,
+    game_sheets_cols=["config", "theme", "rtp", "volatility", "min_bet_cents", "max_bet_cents", "bet_options_cents"], game_sheets=game_sheets,
     placements_cols=["machine", "slot", "from", "to"], placements=placements,
     downtime_cols=["month", "manufacturer", "zone", "shift", "faults", "wait_h", "fix_h", "lost_wait_coin", "lost_fix_coin", "repair_cost"],
     downtime=downtime, queue=queue, fault_hours=fault_hours, roster=roster,

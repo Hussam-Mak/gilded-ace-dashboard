@@ -37,6 +37,14 @@
   // Quality: "high" = bloom + shadows + zone lights; "medium" = no bloom; "low" = no bloom, no shadows, 1x pixels.
   let quality = "high", keyLight = null, hemi = null, perf = { frames: 0, time: 0, settled: false };
   const zoneLights = [];
+  // Status beacons replay the reference day (last day of the period) at the clock time.
+  const STATUS_COLOR = { play: "#36d46e", wait: "#ffc933", repair: "#ff3b30", idle: "#2b2a26" };
+  const STATUS_LABEL = { play: "In play", wait: "Fault reported · waiting for a technician", repair: "Under repair", idle: "Idle" };
+  let refDate = null, refFaults = [], statusKey = "";
+  const status = new Array(D.slots.length).fill(null); // {state, minutes}
+  // Cameras: perspective (cinematic) and orthographic (true top-down plan).
+  let perspCam, orthoCam, renderPass, camMode = "persp", tween = null;
+  const ORTHO_HALF_H = 72; // metres of floor shown above and below the centre at zoom 1
   const occupant = new Array(SLOTS.length).fill(null); // machine id per slot index
   const baseColor = [];                                 // data color per slot index
   const parts = {};                                     // instanced meshes by part name
@@ -149,9 +157,11 @@
     scene = new T.Scene();
     scene.background = new T.Color(0x150c14);
     scene.fog = new T.Fog(0x150c14, 200, 460);
-    camera = new T.PerspectiveCamera(38, 1, 0.5, 900);
+    camera = perspCam = new T.PerspectiveCamera(38, 1, 0.5, 900);
+    orthoCam = new T.OrthographicCamera(-ORTHO_HALF_H, ORTHO_HALF_H, ORTHO_HALF_H, -ORTHO_HALF_H, 1, 900);
     controls = new T.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true; controls.dampingFactor = 0.08; controls.maxPolarAngle = 1.3; controls.minDistance = 10; controls.maxDistance = 260;
+    controls.minZoom = 0.8; controls.maxZoom = 14;
     controls.addEventListener("change", () => { needsRender = true; });
     F3.resetView();
 
@@ -218,7 +228,7 @@
     arch(wx(FX1 - 0.8), wz(110), Math.PI / 2); // garage doors, east rail
     // house sign on the back wall
     const sign = neonSprite("THE GILDED ACE", "#ffd36b");
-    sign.scale.set(7 * sign.userData.aspect, 7, 1); sign.position.set(0, 10.5, -FH / 2 - 0.4); scene.add(sign);
+    sign.userData.screenH = 0.06; sign.position.set(0, 10.5, -FH / 2 - 0.4); scene.add(sign); signs.__house = sign;
   }
 
   // ---------- machines (instanced) ----------
@@ -273,17 +283,65 @@
     for (const name in parts) parts[name].instanceMatrix.needsUpdate = true;
   }
   function paintColors(pulse) {
-    const C = new T.Color(), W = new T.Color(0xffffff), Rh = new T.Color(0xffe0d8);
+    const C = new T.Color(), Rh = new T.Color(0xffe0d8);
     SLOTS.forEach((s, i) => {
       if (!occupant[i]) return;
       C.set(baseColor[i] || "#888888");
       if (pulse != null && flagged.includes(i)) C.lerp(Rh, pulse);
       parts.screen.setColorAt(i, C);
       parts.topper.setColorAt(i, C.clone().multiplyScalar(0.82));
-      parts.bulb.setColorAt(i, C.clone().lerp(W, 0.25));
     });
-    ["screen", "topper", "bulb"].forEach((n) => { if (parts[n].instanceColor) parts[n].instanceColor.needsUpdate = true; });
+    ["screen", "topper"].forEach((n) => { if (parts[n].instanceColor) parts[n].instanceColor.needsUpdate = true; });
   }
+  /** Beacon color from the replayed status; red beacons blink, green ones dim for part-hour play. */
+  function paintBeacons(blink) {
+    const C = new T.Color();
+    SLOTS.forEach((s, i) => {
+      if (!occupant[i]) return;
+      const st = status[i] || { state: "idle" };
+      C.set(STATUS_COLOR[st.state]);
+      if (st.state === "play") C.multiplyScalar(0.45 + 0.55 * Math.min(1, st.minutes / 45));
+      if (st.state === "repair" && blink != null) C.multiplyScalar(0.35 + 0.65 * blink);
+      parts.bulb.setColorAt(i, C);
+    });
+    if (parts.bulb.instanceColor) parts.bulb.instanceColor.needsUpdate = true;
+  }
+  /** Local timestamp "YYYY-MM-DD HH:MM" of the clock on the reference gaming day (06:00 to 06:00). */
+  function clockStamp() {
+    const d = new Date(refDate + "T12:00:00Z");
+    if (simHour < 6) d.setUTCDate(d.getUTCDate() + 1);
+    const hh = Math.floor(simHour), mm = Math.floor((simHour % 1) * 60);
+    return `${d.toISOString().slice(0, 10)} ${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+  }
+  /** Recompute every machine's status for the current clock minute; returns true when anything changed. */
+  function updateStatus() {
+    if (!refDate) return false;
+    const ts = clockStamp();
+    if (ts === statusKey) return false;
+    statusKey = ts;
+    const occ = (D.ref_occ_minutes && D.ref_occ_minutes[refDate]) || {};
+    const hour = Math.floor(simHour);
+    SLOTS.forEach((s, i) => {
+      const m = occupant[i];
+      if (!m) { status[i] = null; return; }
+      const f = refFaults.find((x) => x[0] === m && x[1] <= ts && ts < x[3]);
+      if (f) { status[i] = { state: ts < f[2] ? "wait" : "repair", since: f[1], until: f[3] }; return; }
+      const mins = occ[m] ? occ[m][hour] : 0;
+      status[i] = { state: mins > 0 ? "play" : "idle", minutes: mins };
+    });
+    paintBeacons(1);
+    return true;
+  }
+  F3.statusOf = (machineId) => {
+    const i = occupant.indexOf(machineId); const st = i >= 0 ? status[i] : null;
+    if (!st) return null;
+    const hh = Math.floor(simHour), time = `${((hh + 11) % 12) + 1}:${String(Math.floor((simHour % 1) * 60)).padStart(2, "0")} ${hh < 12 ? "AM" : "PM"}`;
+    let detail = STATUS_LABEL[st.state];
+    if (st.state === "play") detail += ` · ${st.minutes} of 60 minutes this hour`;
+    if (st.state === "wait" || st.state === "repair") detail += ` · back at ${st.until.slice(11)}`;
+    return { state: st.state, color: STATUS_COLOR[st.state], text: `${detail} (${time})` };
+  };
+  F3.statusCounts = () => { const c = { play: 0, wait: 0, repair: 0, idle: 0 }; status.forEach((s) => { if (s) c[s.state]++; }); return c; };
 
   // ---------- neon signs ----------
   /** Glowing text on a canvas sized to the text; sprite.userData.aspect = width / height. */
@@ -298,7 +356,8 @@
     for (let k = 0; k < 3; k++) ctx.fillText(text, w / 2, h / 2);
     ctx.shadowBlur = 0; ctx.fillStyle = "#fff8e6"; ctx.globalAlpha = 0.85; ctx.fillText(text, w / 2, h / 2);
     const tex = new T.CanvasTexture(c); tex.encoding = T.sRGBEncoding;
-    const spr = new T.Sprite(new T.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, fog: false }));
+    // sizeAttenuation off: signs keep the same on-screen size at any zoom, so they never swamp a zone
+    const spr = new T.Sprite(new T.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, fog: false, sizeAttenuation: false }));
     spr.userData.aspect = w / h;
     return spr;
   }
@@ -306,9 +365,10 @@
     for (const z of Object.values(ZONES)) {
       const e = EXT[z.id]; if (!e) continue;
       const spr = neonSprite(z.name.toUpperCase(), z.id === "Z-HL" ? "#ff5fa2" : "#ffcf5a");
-      const SIGN_H = 5.4; // metres tall
+      const SIGN_H = 5.4; // metres tall at the full-floor view (used for placement)
       const len = SIGN_H * spr.userData.aspect;
-      spr.scale.set(len, SIGN_H, 1);
+      const SCREEN_H = 0.034; // fraction of the view height
+      spr.userData.screenH = SCREEN_H;
       // sit the sign where the name used to be painted, nudged up so it hovers just above the floor
       const [mx, my, align] = labelPointM(z.id, e);
       const cx = align === "right" ? mx - len * 0.45 : mx + len * 0.45;
@@ -317,12 +377,25 @@
     }
   }
 
+  /** Keep neon signs the same on-screen size in both cameras. With sizeAttenuation off, a perspective
+      sprite's height is about 1.45 × scale of the view; an orthographic one is in world units. */
+  function scaleSigns() {
+    // narrow views get smaller signs so neighbouring zone names do not collide
+    const narrow = Math.min(1, (container.clientWidth / Math.max(1, container.clientHeight)) / 1.7);
+    const k = (camMode === "ortho" ? (1.45 * (orthoCam.top - orthoCam.bottom)) / orthoCam.zoom : 1) * narrow;
+    for (const spr of Object.values(signs)) {
+      const s = spr.userData.screenH * k;
+      spr.scale.set(s * spr.userData.aspect, s, 1);
+    }
+  }
+
   // ---------- bloom ----------
   function setupBloom() {
     try {
       if (!(T.EffectComposer && T.RenderPass && T.UnrealBloomPass)) return;
       composer = new T.EffectComposer(renderer);
-      composer.addPass(new T.RenderPass(scene, camera));
+      renderPass = new T.RenderPass(scene, camera);
+      composer.addPass(renderPass);
       bloom = new T.UnrealBloomPass(new T.Vector2(512, 512), 0.6, 0.45, 0.88);
       composer.addPass(bloom);
       if (T.ShaderPass && T.GammaCorrectionShader) composer.addPass(new T.ShaderPass(T.GammaCorrectionShader));
@@ -343,12 +416,57 @@
   };
   F3.getQuality = () => quality;
 
-  F3.resetView = function () { camera.position.set(0, 128, 98); controls.target.set(0, 0, 6); controls.update(); needsRender = true; };
+  F3.resetView = function () { F3.goTo("full", true); };
+
+  // ---------- cameras and preset views ----------
+  /** "persp" = cinematic 3D; "ortho" = true top-down plan (rotation off, north up). */
+  F3.setCameraMode = function (mode) {
+    const target = controls.target.clone();
+    camMode = mode;
+    camera = mode === "ortho" ? orthoCam : perspCam;
+    controls.object = camera;
+    controls.enableRotate = mode !== "ortho";
+    controls.screenSpacePanning = mode === "ortho";
+    if (mode === "ortho") { camera.position.set(target.x, 300, target.z + 0.01); camera.zoom = 1; }
+    else { camera.position.set(target.x, 128, target.z + 92); }
+    camera.lookAt(target); controls.target.copy(target);
+    if (renderPass) renderPass.camera = camera;
+    resize(); controls.update(); needsRender = true;
+    F3.goTo(currentView, true);
+  };
+  F3.getCameraMode = () => camMode;
+  let currentView = "full";
+  /** Smoothly move to the whole floor or to one zone's carpet. */
+  F3.goTo = function (view, instant) {
+    currentView = view;
+    let cx = CX, cy = CY - 2, span = 150;
+    const e = EXT[view];
+    if (e) { cx = (e.x0 + e.x1) / 2; cy = (e.y0 + e.y1) / 2; span = Math.max(e.x1 - e.x0, (e.y1 - e.y0) * 1.3) + 16; }
+    const to = { target: new T.Vector3(wx(cx), 0, wz(cy)) };
+    if (camMode === "ortho") { to.pos = new T.Vector3(to.target.x, 300, to.target.z + 0.01); to.zoom = Math.max(1, (ORTHO_HALF_H * 2) / (span * 0.95)); }
+    else { const d = view === "full" ? 1 : span / 150; to.pos = new T.Vector3(to.target.x, 128 * Math.max(d, 0.18), to.target.z + 92 * Math.max(d, 0.18)); to.zoom = 1; }
+    if (view === "full" && camMode !== "ortho") to.pos.set(0, 128, 98);
+    if (instant || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      camera.position.copy(to.pos); controls.target.copy(to.target); camera.zoom = to.zoom; camera.updateProjectionMatrix(); controls.update(); needsRender = true; tween = null; return;
+    }
+    tween = { t: 0, dur: 0.9, fromPos: camera.position.clone(), fromTarget: controls.target.clone(), fromZoom: camera.zoom, to };
+  };
+  function stepTween(dt) {
+    if (!tween) return;
+    tween.t = Math.min(1, tween.t + dt / tween.dur);
+    const k = tween.t < 0.5 ? 2 * tween.t * tween.t : 1 - Math.pow(-2 * tween.t + 2, 2) / 2; // ease in-out
+    camera.position.lerpVectors(tween.fromPos, tween.to.pos, k);
+    controls.target.lerpVectors(tween.fromTarget, tween.to.target, k);
+    camera.zoom = tween.fromZoom + (tween.to.zoom - tween.fromZoom) * k; camera.updateProjectionMatrix();
+    needsRender = true;
+    if (tween.t >= 1) tween = null;
+  }
+  F3.views = () => [["full", "Full floor"], ...Object.values(ZONES).filter((z) => EXT[z.id]).map((z) => [z.id, z.name])];
   F3.setVisible = function (v) { visible = v; lastFrame = 0; needsRender = true; };
   F3.setRunning = function (r) { running = r; lastFrame = 0; const b = container && container.querySelector("[data-toggle-guests]"); if (b) { b.textContent = r ? "Pause guests" : "Play guests"; b.setAttribute("aria-pressed", String(!r)); } };
   F3.isRunning = () => running;
   F3.setSpeed = (s) => { speed = s; };
-  F3.setHour = (h) => { simHour = ((h % 24) + 24) % 24; drawClock(); needsRender = true; };
+  F3.setHour = (h) => { simHour = ((h % 24) + 24) % 24; drawClock(); updateStatus(); needsRender = true; };
   F3.getHour = () => simHour;
   function drawClock() {
     if (!clockEl) return;
@@ -361,11 +479,15 @@
     if (!w || !h) return;
     renderer.setSize(w, h, false); renderer.domElement.style.width = "100%"; renderer.domElement.style.height = "100%";
     if (composer) { composer.setSize(w, h); if (bloom) bloom.resolution.set(w, h); }
-    camera.aspect = w / h; camera.updateProjectionMatrix(); needsRender = true;
+    perspCam.aspect = w / h; perspCam.updateProjectionMatrix();
+    const a = w / h; Object.assign(orthoCam, { left: -ORTHO_HALF_H * a, right: ORTHO_HALF_H * a, top: ORTHO_HALF_H, bottom: -ORTHO_HALF_H }); orthoCam.updateProjectionMatrix();
+    needsRender = true;
   }
 
   // ---------- update from page state ----------
-  F3.update = function ({ occ, byId, sc, metric, selectedId, zoneIdx }) {
+  F3.update = function ({ occ, byId, sc, metric, selectedId, zoneIdx, date }) {
+    if (date && date !== refDate) { refDate = date; refFaults = (D.ref_faults || []).filter((f) => f[1] < nextDay(date) + " 06:00" && f[3] >= date + " 06:00"); }
+    statusKey = "";
     flagged = []; selectedIdx = -1;
     SLOTS.forEach((s, i) => {
       const p = occ[s.slot], m = p && byId[p.machine];
@@ -377,6 +499,7 @@
     });
     placeAll();
     paintColors(null);
+    updateStatus();
     if (keyLight) keyLight.shadow.needsUpdate = true;
     if (selectedIdx >= 0) { const s = SLOTS[selectedIdx]; ring.visible = true; ring.position.x = wx(s.x); ring.position.z = wz(s.y) + 0.3; } else ring.visible = false;
     // neon brightness follows each zone's game-adjusted earnings (1.00 = same game elsewhere)
@@ -392,7 +515,9 @@
   F3.focusSelected = function () {
     if (selectedIdx < 0) return;
     const s = SLOTS[selectedIdx];
-    controls.target.set(wx(s.x), 0, wz(s.y)); camera.position.set(wx(s.x) + 9, 22, wz(s.y) + 24); controls.update(); needsRender = true;
+    const target = new T.Vector3(wx(s.x), 0, wz(s.y));
+    const to = camMode === "ortho" ? { target, pos: new T.Vector3(target.x, 300, target.z + 0.01), zoom: 7 } : { target, pos: new T.Vector3(target.x + 9, 22, target.z + 24), zoom: 1 };
+    tween = { t: 0, dur: 0.8, fromPos: camera.position.clone(), fromTarget: controls.target.clone(), fromZoom: camera.zoom, to };
   };
   /** Screen position of a machine's cabinet inside the 3D box (used for testing clicks). */
   F3.screenPos = (machineId) => {
@@ -408,6 +533,19 @@
     return { guests: guests.length, target: routing.target, closed: routing.closed, usingClosedWalkway: guests.filter((g) => g.usesClosed).length, byZone, byState,
       machines: occupant.filter(Boolean).length, zoneWeights: Object.fromEntries(Object.entries(routing.zoneW).map(([k, v]) => [k, Math.round(v)])) };
   };
+
+  /** Hover card: title, subtitle, label/value rows and the replayed status. Text only, no HTML injection. */
+  function renderCard(el, info, st) {
+    const mk = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    el.className = "tip tipcard";
+    const kids = [mk("div", "tc-title", info.title), mk("div", "tc-sub", info.sub)];
+    if (st) { const s = mk("div", "tc-status"); const dot = mk("span", "tc-dot"); dot.style.background = st.color; s.append(dot, mk("span", null, st.text)); kids.push(s); }
+    const grid = mk("div", "tc-grid");
+    for (const [k, v] of info.rows) grid.append(mk("span", "tc-k", k), mk("span", "tc-v", v));
+    kids.push(grid);
+    if (info.note) kids.push(mk("div", "tc-note", info.note));
+    el.replaceChildren(...kids);
+  }
 
   // ---------- picking ----------
   function bindPointer() {
@@ -426,8 +564,16 @@
       renderer.domElement.style.cursor = id ? "pointer" : "grab";
       if (!id || !callbacks.describe) { tip.hidden = true; return; }
       const r = container.getBoundingClientRect();
-      tip.hidden = false; tip.textContent = callbacks.describe(id);
-      tip.style.left = `${e.clientX - r.left}px`; tip.style.top = `${e.clientY - r.top}px`;
+      const info = callbacks.describe(id);
+      if (typeof info === "string") { tip.className = "tip"; tip.textContent = info; }
+      else renderCard(tip, info, F3.statusOf(id));
+      tip.hidden = false;
+      // keep the card inside the floor box
+      const w = tip.offsetWidth, h = tip.offsetHeight;
+      let x = e.clientX - r.left + 16, y = e.clientY - r.top + 16;
+      if (x + w > r.width - 8) x = e.clientX - r.left - w - 16;
+      if (y + h > r.height - 8) y = Math.max(8, e.clientY - r.top - h - 16);
+      tip.style.left = `${x}px`; tip.style.top = `${y}px`;
     });
     renderer.domElement.addEventListener("pointerleave", () => { tip.hidden = true; });
     renderer.domElement.addEventListener("pointerup", (e) => {
@@ -437,6 +583,7 @@
   }
 
   // ---------- guests driven by zone foot traffic ----------
+  function nextDay(date) { const d = new Date(date + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); }
   function lastDay(month) { const [y, m] = month.split("-").map(Number); return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10); }
   function updateRouting() {
     const from = A.state.from + "-01", to = lastDay(A.state.to);
@@ -550,7 +697,11 @@
       clockTick += dt;
       if (clockTick > 0.25) { clockTick = 0; drawClock(); if (callbacks.onClock) callbacks.onClock(simHour); }
     }
+    stepTween(dt);
+    scaleSigns();
     if (flagged.length) { pulseT += dt; paintColors(0.5 + 0.5 * Math.sin(pulseT * 5)); needsRender = true; }
+    if (updateStatus()) needsRender = true;
+    if (status.some((s) => s && s.state === "repair")) { paintBeacons(0.5 + 0.5 * Math.sin(t / 220)); needsRender = true; }
     if (ring.visible) { ring.rotation.z += dt * 0.8; needsRender = true; }
     if (needsRender) {
       const t0 = performance.now();
