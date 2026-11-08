@@ -37,6 +37,12 @@
       <div class="f3-bar">
         <span class="f3-clock" data-clock aria-live="off">Loading the floor…</span>
         <div class="f3-actions">
+          <div class="seg cam-seg" role="group" aria-label="Camera">
+            <button type="button" data-cam="persp" aria-pressed="true">3D</button>
+            <button type="button" data-cam="ortho" aria-pressed="false">Top-down</button>
+          </div>
+          <label class="sr-only" for="f3-view">Go to</label>
+          <select id="f3-view" class="small-select" title="Jump to a zone"></select>
           <button class="btn small-btn" type="button" data-toggle-guests aria-pressed="false">Pause guests</button>
           <button class="btn small-btn" type="button" data-focus>Zoom to machine</button>
           <button class="btn small-btn" type="button" data-reset>Reset view</button>
@@ -81,6 +87,11 @@
           <button type="button" data-speed="1" aria-pressed="true">1×</button>
           <button type="button" data-speed="10" aria-pressed="false">10×</button>
         </div>
+      </div>
+      <div class="statusbox" id="f3-status" hidden>
+        <span class="ctl-label">Status lights on each machine</span>
+        <div class="st-row" id="status-legend"></div>
+        <p class="lg-note" id="status-date"></p>
       </div>
       <p class="hint" id="view-hint">Drag to rotate · scroll or pinch to zoom · right-drag to pan · click a cabinet.</p>
       <details class="about">
