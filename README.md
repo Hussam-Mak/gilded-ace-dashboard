@@ -5,6 +5,8 @@ A static, two-page site for the TAMU Datathon 2026 *Dashboard Royale* challenge.
 | File | What it is |
 | --- | --- |
 | `index.html` + `floor.js` | **Floor** (landing page): every slot machine at its real position, colored by play, luck, payout check or uptime. Click a machine to see its numbers. Toggle between the 3D floor and a flat plan view. |
+| Status lights | The beacon on each machine replays the last day of the selected period at the clock time: green = in play that hour (real hourly occupancy, dimmer for part-hour play), yellow = fault reported and waiting for a technician, red (blinking) = under repair (real repair tickets), off = idle. The dataset has no paper or coin levels, so those states are not shown. |
+| Cameras | "3D" is a perspective view you can orbit; "Top-down" is a true orthographic plan with north up. "Go to" jumps smoothly to the full floor or any zone. |
 | `floor3d.js` | The 3D floor (three.js 0.128 from jsDelivr): green-felt floor painted to the real layout, one cabinet per occupied slot, and walking guests. Guests enter through the three real entrances, choose zones in proportion to each zone's counted entries for the period, follow the real walkways (avoiding the Back Forty walkway when the period falls mostly inside its Mar 3 – Apr 6 closure), and their number follows the average hourly traffic on a simulated clock. Falls back to the plan view without WebGL; starts paused for reduced-motion users. |
 | `dashboard.html` + `views.js` | **Dashboard**: global filters and seven tabs (Answer, Machines, Floor & demand, Downtime, Guests & comps, Model, July plan) |
 | `styles.css` | Shared theme (light and dark) for both pages |

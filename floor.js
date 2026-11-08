@@ -96,12 +96,14 @@
     legend(sc);
     $("#floor3d").hidden = view !== "3d";
     $("#f3-time").hidden = view !== "3d";
+    $("#f3-status").hidden = view !== "3d";
     $("#view-hint").textContent = view === "3d" ? "Drag to rotate · scroll or pinch to zoom · right-drag to pan · click a cabinet." : "Hover a machine for a preview · click it to open its card.";
     $("#floor-wrap").hidden = view !== "plan";
     document.querySelectorAll("[data-view]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.view === view)));
     if (view === "3d") {
       ensure3D();
-      window.Floor3D.update({ occ, byId, sc, metric, selectedId: A.state.machine, zoneIdx: zi });
+      window.Floor3D.update({ occ, byId, sc, metric, selectedId: A.state.machine, zoneIdx: zi, date: refDate() });
+      updateStatusLegend();
       window.Floor3D.setVisible(true);
       $("#floor-cap").textContent = `Floor as it stood on ${dateLabel()}, 2025: ${onFloor} machines and ${SLOTS.length - onFloor} empty slots (outlined) out of ${SLOTS.length}. Colors cover ${A.periodLabel()}. ` +
         "Guests arrive through the three real entrances and pick zones in proportion to each zone's counted entries for this period; their number follows the average traffic for the hour on the clock. " +
@@ -224,12 +226,20 @@
     const box = $("#floor3d");
     window.Floor3D.init(box, {
       onPick: (id) => selectMachine(id),
-      describe: (id) => { const m = currentById[id]; return m ? `${m.machine} · ${m.theme} · ${tipValue(m)}` : id; },
-      onClock: (h) => { if (window.Floor3D._clockCb) window.Floor3D._clockCb(h); },
+      describe: (id) => hoverCard(id),
+      onClock: (h) => { if (window.Floor3D._clockCb) window.Floor3D._clockCb(h); updateStatusLegend(); },
     });
     box.querySelector("[data-toggle-guests]").addEventListener("click", () => window.Floor3D.setRunning(!window.Floor3D.isRunning()));
     box.querySelector("[data-reset]").addEventListener("click", () => window.Floor3D.resetView());
     box.querySelector("[data-focus]").addEventListener("click", () => window.Floor3D.focusSelected());
+    // camera mode and preset views
+    const presets = $("#f3-view");
+    presets.replaceChildren(...window.Floor3D.views().map(([id, name]) => el("option", { value: id, text: name })));
+    presets.addEventListener("change", () => window.Floor3D.goTo(presets.value));
+    document.querySelectorAll("[data-cam]").forEach((b) => b.addEventListener("click", () => {
+      window.Floor3D.setCameraMode(b.dataset.cam);
+      document.querySelectorAll("[data-cam]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    }));
     // time of day: the slider follows the running clock, and dragging it jumps the clock
     const hour = $("#f3-hour"), out = $("#f3-hour-out");
     const fmtHour = (h) => { const hh = Math.floor(h), mm = Math.round((h % 1) * 60); return `${((hh + 11) % 12) + 1}:${String(mm).padStart(2, "0")} ${hh < 12 ? "AM" : "PM"}`; };
@@ -243,6 +253,38 @@
       document.querySelectorAll("[data-speed]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
     }));
     f3Ready = true;
+  }
+
+  const SHEETS = Object.fromEntries((D.game_sheets || []).map((g) => [g[0], g]));
+  const cents = (c) => (c >= 100 ? `$${(c / 100).toFixed(c % 100 ? 2 : 0)}` : `${c}¢`);
+  /** Hover card content for one machine, over the selected period. */
+  function hoverCard(id) {
+    const m = currentById[id]; const meta = A.MACH[id];
+    if (!m || !meta) return id;
+    const g = SHEETS[meta.config];
+    const bets = g ? String(g[6]).split("|").map(Number).map(cents).join(" · ") : "–";
+    const days = m.days || 1;
+    return {
+      title: `${m.machine} · ${meta.theme}`,
+      sub: `${A.ZONE_NAME[m.zone]} · ${m.bank} · ${meta.manufacturer} · ${meta.volatility} volatility`,
+      rows: [
+        ["Denomination", `${bets} per spin`],
+        ["Occupancy", `${F.pct(m.avail_h ? m.occ_h / m.avail_h : null, 0)} of open hours`],
+        ["Daily revenue", `${F.usd(m.win / days)} house win / day`],
+        ["Expected", `${F.usd(m.theo / days)} / day`],
+        ["Hold vs. design", `${F.pct(m.hold, 1)} vs. ${F.pct(1 - meta.rtp, 1)} (RTP ${F.pct(meta.rtp, 0)})`],
+        ["Luck · payout check", `${F.z(m.luckZ)} · ${F.z(m.hitZ)}`],
+      ],
+      note: `${A.periodLabel()} · ${days} days on floor · click for the full card`,
+    };
+  }
+  /** Counts of machines by replayed status, shown in the left panel. */
+  function updateStatusLegend() {
+    const box = $("#status-legend"); if (!box || !window.Floor3D || !window.Floor3D.statusCounts) return;
+    const c = window.Floor3D.statusCounts();
+    const item = (color, label, n) => el("span", { class: "st-item" }, el("span", { class: "tc-dot", style: `background:${color}` }), `${label} ${n}`);
+    box.replaceChildren(item("#36d46e", "In play", c.play), item("#ffc933", "Waiting for tech", c.wait), item("#ff3b30", "Under repair", c.repair), item("#55534d", "Idle", c.idle));
+    $("#status-date").textContent = `Replays ${dateLabel()} at the clock time`;
   }
 
   function tipValue(m) {
