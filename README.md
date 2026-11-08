@@ -15,10 +15,14 @@ The manager wants to replace the ten machines that earned the least. Nine of tho
 
 | Path | What it is |
 | --- | --- |
+| `submission/WRITEUP.md` | The 400-word write-up |
+| `submission/APPENDIX.md` | Claims and evidence appendix: table/query → result → alternative explanation → limitation |
+| `submission/AI_DISCLOSURE.md` | AI-use disclosure |
 | `dashboard/` | The static site (also published from the `gh-pages` branch) |
 | `analysis/forecast.py` | Daily coin-in forecast: weekday + calendar model vs. weekday and flat baselines, trained Jan–Apr, scored May–Jun |
 | `analysis/checks.py` | Placebo weekends, pre-event tournament baseline, detection checks |
 | `analysis/plan_options.py` | Alternative $100K plans simulated under stated assumptions, plus promotion downside scenarios |
+| `analysis/claims_check.py` | Recomputes every number in the write-up from the raw tables |
 | `analysis/build_dashboard_data.py` | Pre-aggregates the data into `dashboard/data.js` |
 | `analysis/budget-plan.html` | The July plan as a standalone page, with the claims-and-evidence appendix |
 | `analysis/*_results.json` | Saved outputs of the scripts above |
@@ -34,6 +38,7 @@ git clone --depth 1 https://github.com/tamu-datathon-org/dashboard-royale.git   
 python analysis/forecast.py
 python analysis/checks.py
 python analysis/plan_options.py
+python analysis/claims_check.py
 python analysis/build_dashboard_data.py
 python -m http.server 8765 --directory dashboard   # then open http://localhost:8765
 ```
@@ -46,4 +51,4 @@ python -m http.server 8765 --directory dashboard   # then open http://localhost:
 
 ## AI use
 
-Built with Claude (Anthropic) via Claude Code as a pair analyst and engineer: exploring the data, writing and checking the SQL/Python analyses, building the dashboard and 3D floor, and drafting text. Every number shown was produced by the scripts in `analysis/` and checked against the data; an external review prompted corrections that are reflected in the plan.
+I made the main decisions: the questions, the framing, the dashboard design and the final plan. I used Claude (Anthropic) via Claude Code as an implementation assistant to write the SQL/Python analyses and dashboard code and to draft text. Every number shown was produced by the scripts in `analysis/` and checked against the data. Details: [`submission/AI_DISCLOSURE.md`](submission/AI_DISCLOSURE.md).
